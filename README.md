@@ -1,57 +1,30 @@
-# Jawad Abbasi — Animated DevOps Portfolio
+# Jawad Abbasi — Premium DevOps Portfolio
 
-A static, production-ready one-page portfolio with a custom Three.js **Living DevOps Ecosystem** globe.
+A production-ready static portfolio with a bundled Three.js DevOps command-center globe. No runtime CDN, npm install, or Vercel build step is required.
 
-## Highlights
-
-- Procedural 3D Earth with atmosphere, night lights, clouds, and engineered grid overlay
-- Six technology orbits: Git, Docker, Terraform, AWS, Linux, and CI/CD
-- Animated data particles and interactive hover descriptions
-- Repeating deployment pulse: Git → CI/CD → Docker → Terraform → AWS → Earth
-- Crystal/glass UI, scroll reveals, responsive layouts, reduced-motion support, and static fallback
-- SEO metadata and Person schema
-- No backend required
-
-## Preview locally
-
-From this folder, run either:
+## Local preview
 
 ```bash
-python -m http.server 8080
+python3 -m http.server 8082
 ```
 
-Then open `http://localhost:8080`.
+Open `http://localhost:8082`.
 
-You can also use:
+## Vercel
 
-```bash
-npx serve .
-```
+- Framework Preset: **Other**
+- Root Directory: `./`
+- Build Command override: **Off**
+- Install Command override: **Off**
+- Output Directory override: **Off**
 
-> The Three.js modules are loaded from jsDelivr, so the browser needs an internet connection during preview and on the deployed website.
+The interactive scene has a hard timeout and always falls back to the premium prototype artwork if WebGL cannot initialize. It cannot remain stuck on the loading screen.
 
-## Deploy
+## Main files
 
-Upload the entire folder to any static host:
-
-- AWS S3 + CloudFront
-- Vercel
-- Netlify
-- GitHub Pages
-- Cloudflare Pages
-
-For `jawadabbasi.com`, point the domain to the chosen host and keep every file/folder path unchanged.
-
-## Customize
-
-- Main content: `index.html`
-- Visual design: `styles.css`
-- Navigation, scroll effects, counters, and UI: `page.js`
-- Three.js globe and deployment animation: `script.js`
-- Earth textures and favicon: `assets/`
-
-Contact details currently configured:
-
-- Email: `jawadabbasi54@gmail.com`
-- Phone: `+92 332 5501123`
-- LinkedIn: `jawad-abbasi-573772117`
+- `index.html`
+- `styles.css`
+- `script.js` — locally bundled Three.js application
+- `assets/textures/` — local Earth textures
+- `assets/prototype-fallback.png` — instant visual fallback
+- `vercel.json`
