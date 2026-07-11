@@ -1,30 +1,32 @@
-# Jawad Abbasi — Premium DevOps Portfolio
+# Jawad Abbasi Portfolio — Premium Crystal Globe
 
-A production-ready static portfolio with a bundled Three.js DevOps command-center globe. No runtime CDN, npm install, or Vercel build step is required.
+This build replaces the terrain-style Earth with a procedural, premium crystal globe.
+
+## What changed
+
+- No terrain/daylight map is used.
+- The globe is rendered as a deep royal-blue glass sphere with a sharp Fresnel edge, luminous city-light network, holographic latitude/longitude grid, engineering wireframe, and three animated orbit rings.
+- Developer, Git, CI/CD, AWS, CloudWatch, and Alerts cards rotate with the globe.
+- AWS connects to eight region cards, each showing three Availability Zones.
+- Animated packets represent code flow, deployment, monitoring, and alert delivery.
+- Bloom/post-processing was removed to prevent washed-out or blurry rendering.
+- Three.js is bundled locally under `vendor/`, so Vercel does not depend on a runtime CDN.
+- The approved prototype remains only as a fallback and is fully removed once WebGL starts.
 
 ## Local preview
 
 ```bash
-python3 -m http.server 8082
+python3 -m http.server 8080
 ```
 
-Open `http://localhost:8082`.
+Open `http://localhost:8080`.
 
-## Vercel
+## Vercel settings
 
 - Framework Preset: **Other**
 - Root Directory: `./`
-- Build Command override: **Off**
-- Install Command override: **Off**
-- Output Directory override: **Off**
+- Build Command: disabled
+- Install Command: disabled
+- Output Directory override: disabled
 
-The interactive scene has a hard timeout and always falls back to the premium prototype artwork if WebGL cannot initialize. It cannot remain stuck on the loading screen.
-
-## Main files
-
-- `index.html`
-- `styles.css`
-- `script.js` — locally bundled Three.js application
-- `assets/textures/` — local Earth textures
-- `assets/prototype-fallback.png` — instant visual fallback
-- `vercel.json`
+After pushing, test the newest `.vercel.app` deployment first, then confirm `jawadabbasi.com` is attached to that same production project.
