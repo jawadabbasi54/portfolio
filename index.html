@@ -19,14 +19,6 @@
   <title>Jawad Abbasi | Senior DevOps Engineer</title>
   <link rel="stylesheet" href="styles.css" />
   <noscript><style>.page-loader{display:none!important}.reveal{opacity:1!important;transform:none!important}</style></noscript>
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
-      }
-    }
-  </script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -71,16 +63,21 @@
   <main>
     <section class="hero section-shell" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <div class="eyebrow reveal"><span class="status-dot"></span>Senior DevOps Engineer · Islamabad, Pakistan</div>
+        <div class="hero-name reveal">
+          <span>Jawad Abbasi</span>
+        </div>
+        <div class="eyebrow reveal"><span class="status-dot"></span>Senior DevOps Engineer <i></i> Islamabad, Pakistan</div>
         <h1 id="hero-title" class="reveal">
-          I engineer the systems<br />
-          <span class="gradient-text">behind reliable software.</span>
+          I engineer the<br />
+          systems<br />
+          behind <span class="word-blue">reliable</span><br />
+          <span class="word-orange">software.</span>
         </h1>
         <p class="hero-lead reveal">
           7+ years building secure AWS infrastructure, automated delivery pipelines, and production operations for enterprise-scale cloud and IoT platforms.
         </p>
         <div class="hero-actions reveal">
-          <a class="button button-primary magnetic" href="#work"><span>Explore my work</span><b>↘</b></a>
+          <a class="button button-primary magnetic" href="#work"><span>Explore my work</span><b>→</b></a>
           <a class="button button-ghost magnetic" href="mailto:jawadabbasi54@gmail.com"><span>Start a conversation</span></a>
         </div>
         <div class="hero-metrics reveal" aria-label="Career highlights">
@@ -92,19 +89,66 @@
       </div>
 
       <div class="hero-visual reveal" id="globe-shell">
-        <canvas id="globe-canvas" aria-label="Interactive living DevOps ecosystem globe"></canvas>
-        <div class="globe-fallback" id="globe-fallback" aria-hidden="true">
-          <div class="fallback-earth"></div>
-          <span class="fallback-ring ring-a"></span><span class="fallback-ring ring-b"></span><span class="fallback-ring ring-c"></span>
+        <div class="command-center" id="command-center" aria-label="Animated DevSecOps delivery and AWS operations ecosystem">
+          <div class="command-center-depth" id="command-center-depth">
+            <img class="command-center-art" src="assets/devops-command-center.png" alt="DevSecOps lifecycle showing GitHub, CI/CD, security, Terraform, AWS services, CloudWatch, Slack, mobile, and email alerts around a connected global infrastructure network" />
+
+            <div class="command-center-ambient" aria-hidden="true"></div>
+            <div class="globe-scan globe-scan-one" aria-hidden="true"></div>
+            <div class="globe-scan globe-scan-two" aria-hidden="true"></div>
+            <div class="globe-sweep" aria-hidden="true"></div>
+
+            <svg class="command-motion" viewBox="0 0 858 850" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <filter id="motionBlueGlow" x="-80%" y="-80%" width="260%" height="260%">
+                  <feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <filter id="motionOrangeGlow" x="-80%" y="-80%" width="260%" height="260%">
+                  <feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <radialGradient id="pulseBlue"><stop offset="0" stop-color="#fff"/><stop offset=".22" stop-color="#9fd2ff"/><stop offset="1" stop-color="#1b79ff" stop-opacity="0"/></radialGradient>
+                <radialGradient id="pulseOrange"><stop offset="0" stop-color="#fff"/><stop offset=".2" stop-color="#ffd1a1"/><stop offset="1" stop-color="#ff851b" stop-opacity="0"/></radialGradient>
+              </defs>
+
+              <path id="appFlow" class="motion-path motion-blue" d="M185 74 C270 74 306 74 385 74 S515 74 625 74 S757 90 770 183" />
+              <path id="infraFlow" class="motion-path motion-blue motion-dotted" d="M185 74 C105 78 105 150 105 242 S112 313 153 347" />
+              <path id="terraformFlow" class="motion-path motion-orange" d="M151 347 C255 347 310 316 382 291 S556 256 727 351" />
+              <path id="deployFlow" class="motion-path motion-orange" d="M774 184 C796 241 785 305 723 351 C666 398 633 482 621 553" />
+              <path id="serviceFlow" class="motion-path motion-orange" d="M619 565 C572 628 502 690 426 700 S288 682 231 657" />
+              <path id="alertFlow" class="motion-path motion-orange motion-dotted" d="M245 700 C355 700 440 700 550 700 S676 705 718 736" />
+
+              <g class="packet packet-blue"><circle r="9" fill="url(#pulseBlue)"/><circle r="2.8" fill="#fff"/><animateMotion dur="3.7s" repeatCount="indefinite" rotate="auto"><mpath href="#appFlow"/></animateMotion></g>
+              <g class="packet packet-blue packet-delay-one"><circle r="8" fill="url(#pulseBlue)"/><circle r="2.4" fill="#fff"/><animateMotion dur="4.6s" repeatCount="indefinite" rotate="auto"><mpath href="#infraFlow"/></animateMotion></g>
+              <g class="packet packet-orange"><circle r="10" fill="url(#pulseOrange)"/><circle r="3" fill="#fff"/><animateMotion dur="4.2s" repeatCount="indefinite" rotate="auto"><mpath href="#terraformFlow"/></animateMotion></g>
+              <g class="packet packet-orange packet-delay-two"><circle r="10" fill="url(#pulseOrange)"/><circle r="3" fill="#fff"/><animateMotion dur="3.9s" repeatCount="indefinite" rotate="auto"><mpath href="#deployFlow"/></animateMotion></g>
+              <g class="packet packet-orange"><circle r="9" fill="url(#pulseOrange)"/><circle r="2.8" fill="#fff"/><animateMotion dur="4.5s" repeatCount="indefinite" rotate="auto"><mpath href="#serviceFlow"/></animateMotion></g>
+              <g class="packet packet-orange packet-delay-one"><circle r="8" fill="url(#pulseOrange)"/><circle r="2.4" fill="#fff"/><animateMotion dur="3.3s" repeatCount="indefinite" rotate="auto"><mpath href="#alertFlow"/></animateMotion></g>
+            </svg>
+
+            <div class="pin-layer" aria-hidden="true">
+              <span style="--x:29%;--y:29%;--tone:#fff"></span><span style="--x:38%;--y:27%;--tone:#2287ff"></span>
+              <span style="--x:47%;--y:23%;--tone:#ff8a1f"></span><span style="--x:58%;--y:30%;--tone:#2287ff"></span>
+              <span style="--x:66%;--y:28%;--tone:#fff"></span><span style="--x:73%;--y:35%;--tone:#ff8a1f"></span>
+              <span style="--x:34%;--y:38%;--tone:#ff8a1f"></span><span style="--x:43%;--y:40%;--tone:#2287ff"></span>
+              <span style="--x:51%;--y:36%;--tone:#fff"></span><span style="--x:60%;--y:43%;--tone:#2287ff"></span>
+              <span style="--x:69%;--y:45%;--tone:#ff8a1f"></span><span style="--x:28%;--y:48%;--tone:#2287ff"></span>
+              <span style="--x:39%;--y:52%;--tone:#fff"></span><span style="--x:50%;--y:50%;--tone:#ff8a1f"></span>
+              <span style="--x:59%;--y:53%;--tone:#2287ff"></span><span style="--x:68%;--y:56%;--tone:#ff8a1f"></span>
+              <span style="--x:33%;--y:61%;--tone:#ff8a1f"></span><span style="--x:45%;--y:59%;--tone:#2287ff"></span>
+              <span style="--x:55%;--y:62%;--tone:#fff"></span><span style="--x:63%;--y:66%;--tone:#ff8a1f"></span>
+            </div>
+
+            <button class="system-hotspot hotspot-github" data-stage="GitHub" aria-label="GitHub code push stage"></button>
+            <button class="system-hotspot hotspot-cicd" data-stage="CI/CD" aria-label="CI/CD build, test, scan and deploy stage"></button>
+            <button class="system-hotspot hotspot-security" data-stage="Security" aria-label="DevSecOps security checks stage"></button>
+            <button class="system-hotspot hotspot-terraform" data-stage="Terraform" aria-label="Terraform infrastructure provisioning stage"></button>
+            <button class="system-hotspot hotspot-aws" data-stage="AWS" aria-label="AWS cloud infrastructure stage"></button>
+            <button class="system-hotspot hotspot-services" data-stage="Services" aria-label="AWS application services stage"></button>
+            <button class="system-hotspot hotspot-cloudwatch" data-stage="CloudWatch" aria-label="CloudWatch logs metrics and alarms stage"></button>
+            <button class="system-hotspot hotspot-alerts" data-stage="Alerts" aria-label="Slack phone and email notifications stage"></button>
+          </div>
+          <div class="system-tooltip" id="tech-tooltip" role="status"></div>
         </div>
-        <div class="globe-hud glass-panel">
-          <div><span class="live-indicator"></span>Living DevOps Ecosystem</div>
-          <small id="pipeline-status">PIPELINE · READY</small>
-        </div>
-        <div class="globe-legend glass-panel" aria-hidden="true">
-          <span>Drag</span><i></i><span>Explore</span><i></i><span>Hover nodes</span>
-        </div>
-        <div class="tech-tooltip" id="tech-tooltip" role="status"></div>
       </div>
       <div class="scroll-cue" aria-hidden="true"><span></span><small>Scroll to deploy</small></div>
     </section>
@@ -261,8 +305,6 @@
     <p>© <span id="year"></span> Jawad Abbasi</p>
     <a href="#top">Back to top ↑</a>
   </footer>
-
-  <script src="page.js"></script>
-  <script type="module" src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
