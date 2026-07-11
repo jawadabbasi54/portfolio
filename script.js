@@ -54,17 +54,19 @@
   const loader = qs("#scene-loader");
   const errorPanel = qs("#scene-error");
   const rotateButton = qs("#auto-rotate");
-  const flowCopy = qs("#flow-copy");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const gsapApi = window.gsap;
+  const ScrollTriggerApi = window.ScrollTrigger;
+  if (gsapApi && ScrollTriggerApi) gsapApi.registerPlugin(ScrollTriggerApi);
 
-  const lifecycleText = [
-    "Developer writes, commits and pushes application code",
-    "Bitbucket, GitHub or GitLab receives the reviewed change",
-    "DevSecOps validates security, builds, tests and deploys",
-    "AWS releases services across resilient regions and AZs",
-    "CloudWatch streams logs, metrics and resource health",
-    "Alarms notify Slack, phone and email in real time"
-  ];
+  const uiLayer = qs("#globe-ui-layer");
+  const codePath = qs("#code-path");
+  const monitorPath = qs("#monitor-path");
+  const deploymentPath = qs("#deployment-path");
+  const applicationVersion = qs("#application-version");
+  const telemetryPulse = qs("#telemetry-pulse");
+  const typingCode = qs("#typing-code");
+
 
   let fallbackTimer = null;
 
@@ -146,271 +148,6 @@
     ctx.fillRect(0, 0, size, size);
     const texture = new T.CanvasTexture(c);
     texture.encoding = T.sRGBEncoding;
-    return texture;
-  }
-
-  function createCardTexture(config, anisotropy) {
-    const width = 1280;
-    const height = 610;
-    const c = document.createElement("canvas");
-    c.width = width;
-    c.height = height;
-    const ctx = c.getContext("2d");
-
-    const accent = config.accent;
-    const panel = ctx.createLinearGradient(0, 0, width, height);
-    panel.addColorStop(0, "rgba(13,35,79,.97)");
-    panel.addColorStop(0.5, "rgba(6,21,53,.95)");
-    panel.addColorStop(1, "rgba(3,13,36,.98)");
-
-    ctx.save();
-    ctx.shadowColor = accent;
-    ctx.shadowBlur = 38;
-    roundedRect(ctx, 34, 34, width - 68, height - 68, 46);
-    ctx.fillStyle = panel;
-    ctx.fill();
-    ctx.lineWidth = 5;
-    ctx.strokeStyle = accent;
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    const gloss = ctx.createLinearGradient(0, 30, 0, 250);
-    gloss.addColorStop(0, "rgba(255,255,255,.2)");
-    gloss.addColorStop(0.46, "rgba(255,255,255,.025)");
-    gloss.addColorStop(1, "rgba(255,255,255,0)");
-    roundedRect(ctx, 48, 48, width - 96, 220, 35);
-    ctx.fillStyle = gloss;
-    ctx.fill();
-
-    const edge = ctx.createLinearGradient(34, 34, width - 34, height - 34);
-    edge.addColorStop(0, "rgba(255,255,255,.45)");
-    edge.addColorStop(0.28, "rgba(255,255,255,0)");
-    edge.addColorStop(0.68, "rgba(255,255,255,.07)");
-    edge.addColorStop(1, "rgba(255,255,255,0)");
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = edge;
-    roundedRect(ctx, 46, 46, width - 92, height - 92, 36);
-    ctx.stroke();
-    ctx.restore();
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(106, 105, 54, 0, Math.PI * 2);
-    const badge = ctx.createRadialGradient(88, 82, 4, 106, 105, 58);
-    badge.addColorStop(0, "#e7f4ff");
-    badge.addColorStop(0.18, accent);
-    badge.addColorStop(1, "#08285f");
-    ctx.fillStyle = badge;
-    ctx.shadowColor = accent;
-    ctx.shadowBlur = 28;
-    ctx.fill();
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "#b9e1ff";
-    ctx.stroke();
-    ctx.restore();
-
-    text(ctx, String(config.number), 106, 108, 42, "#ffffff", "center", 850);
-    text(ctx, config.title, 186, 104, 54, "#f7fbff", "left", 800);
-    text(ctx, config.subtitle, 186, 158, 25, "#9fb9df", "left", 550);
-
-    if (config.type === "developer") {
-      roundedRect(ctx, 84, 232, 1112, 286, 30);
-      ctx.fillStyle = "rgba(1,8,25,.78)";
-      ctx.fill();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "rgba(68,153,255,.38)";
-      ctx.stroke();
-
-      ["#ff715e", "#ffbd45", "#30d158"].forEach((color, index) => {
-        ctx.beginPath();
-        ctx.arc(125 + index * 38, 274, 10, 0, Math.PI * 2);
-        ctx.fillStyle = color;
-        ctx.fill();
-      });
-
-      const lines = [
-        ["const", " pipeline = deploy(application);"],
-        ["security", ".scan();  build();  test();"],
-        ["git", ".commit('release');  git.push();"],
-        ["await", " production.ready();"]
-      ];
-      lines.forEach((line, index) => {
-        text(ctx, line[0], 126, 338 + index * 45, 26, index === 1 ? "#ffb25f" : "#60b8ff", "left", 800, "ui-monospace, SFMono-Regular, Menlo, monospace");
-        text(ctx, line[1], 260, 338 + index * 45, 26, "#dceaff", "left", 600, "ui-monospace, SFMono-Regular, Menlo, monospace");
-      });
-    }
-
-    if (config.type === "git") {
-      const repos = [
-        { code: "BB", name: "Bitbucket", color: "#438cff" },
-        { code: "GH", name: "GitHub", color: "#f8fbff" },
-        { code: "GL", name: "GitLab", color: "#ff8848" }
-      ];
-      repos.forEach((repo, index) => {
-        const x = 90 + index * 394;
-        roundedRect(ctx, x, 250, 340, 214, 30);
-        ctx.fillStyle = "rgba(2,11,31,.78)";
-        ctx.fill();
-        ctx.strokeStyle = `${repo.color}9c`;
-        ctx.lineWidth = 3;
-        ctx.stroke();
-        text(ctx, repo.code, x + 170, 322, 58, repo.color, "center", 900);
-        text(ctx, repo.name, x + 170, 406, 27, "#d5e4fb", "center", 650);
-      });
-    }
-
-    if (config.type === "cicd") {
-      const phases = [
-        ["SEC", "Security", "#c585ff"],
-        ["BLD", "Build", "#6cc2ff"],
-        ["TST", "Test", "#6cc2ff"],
-        ["DPL", "Deploy", "#ffab55"]
-      ];
-      phases.forEach((phase, index) => {
-        const x = 78 + index * 296;
-        roundedRect(ctx, x, 250, 246, 212, 28);
-        ctx.fillStyle = "rgba(2,11,31,.78)";
-        ctx.fill();
-        ctx.strokeStyle = `${phase[2]}a6`;
-        ctx.lineWidth = 3;
-        ctx.stroke();
-        text(ctx, phase[0], x + 123, 322, 46, phase[2], "center", 900);
-        text(ctx, phase[1], x + 123, 406, 25, "#e0ebfb", "center", 650);
-        if (index < phases.length - 1) text(ctx, "→", x + 270, 354, 40, "#55b7ff", "center", 800);
-      });
-    }
-
-    if (config.type === "aws") {
-      text(ctx, "aws", 210, 350, 88, "#ffffff", "center", 650);
-      ctx.save();
-      ctx.strokeStyle = "#ff9e2f";
-      ctx.lineWidth = 11;
-      ctx.lineCap = "round";
-      ctx.beginPath();
-      ctx.arc(210, 355, 88, 0.22, 1.38);
-      ctx.stroke();
-      ctx.restore();
-      ["EB", "λ", "ECS", "RDS", "S3", "VPC"].forEach((label, index) => {
-        const x = 390 + (index % 3) * 260;
-        const y = 250 + Math.floor(index / 3) * 118;
-        roundedRect(ctx, x, y, 212, 88, 22);
-        ctx.fillStyle = "rgba(2,11,31,.8)";
-        ctx.fill();
-        ctx.strokeStyle = index < 3 ? "rgba(255,156,48,.72)" : "rgba(70,153,255,.72)";
-        ctx.lineWidth = 3;
-        ctx.stroke();
-        text(ctx, label, x + 106, y + 45, 29, index < 3 ? "#ffb15b" : "#7cc5ff", "center", 900);
-      });
-    }
-
-    if (config.type === "cloudwatch") {
-      roundedRect(ctx, 84, 244, 1112, 236, 30);
-      ctx.fillStyle = "rgba(2,11,31,.78)";
-      ctx.fill();
-      ctx.strokeStyle = "rgba(51,229,255,.36)";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      for (let y = 286; y <= 430; y += 36) {
-        ctx.beginPath();
-        ctx.moveTo(118, y);
-        ctx.lineTo(874, y);
-        ctx.strokeStyle = "rgba(88,132,194,.19)";
-        ctx.stroke();
-      }
-      const values = [118, 105, 146, 86, 126, 66, 110, 52, 88, 34, 70, 48, 28];
-      ctx.beginPath();
-      values.forEach((value, index) => {
-        const x = 124 + index * 58;
-        const y = 276 + value;
-        if (index === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-      });
-      ctx.strokeStyle = "#36e5ff";
-      ctx.lineWidth = 8;
-      ctx.shadowColor = "#36e5ff";
-      ctx.shadowBlur = 18;
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-
-      ctx.beginPath();
-      ctx.arc(1036, 360, 70, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(63,220,255,.19)";
-      ctx.lineWidth = 18;
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(1036, 360, 70, -Math.PI / 2, Math.PI * 1.3);
-      ctx.strokeStyle = "#42e3be";
-      ctx.lineWidth = 18;
-      ctx.stroke();
-      text(ctx, "99.9%", 1036, 360, 31, "#ffffff", "center", 900);
-    }
-
-    if (config.type === "alerts") {
-      [
-        ["SL", "Slack", "#4ce5e8"],
-        ["☎", "Phone", "#61ef92"],
-        ["✉", "Email", "#8ebaff"]
-      ].forEach((item, index) => {
-        const x = 88 + index * 390;
-        roundedRect(ctx, x, 248, 330, 220, 30);
-        ctx.fillStyle = "rgba(2,11,31,.78)";
-        ctx.fill();
-        ctx.strokeStyle = `${item[2]}8a`;
-        ctx.lineWidth = 3;
-        ctx.stroke();
-        text(ctx, item[0], x + 165, 323, 58, item[2], "center", 900);
-        text(ctx, item[1], x + 165, 414, 27, "#dce8fb", "center", 650);
-      });
-    }
-
-    const texture = new T.CanvasTexture(c);
-    texture.encoding = T.sRGBEncoding;
-    texture.anisotropy = anisotropy;
-    texture.minFilter = T.LinearFilter;
-    texture.magFilter = T.LinearFilter;
-    texture.generateMipmaps = true;
-    texture.needsUpdate = true;
-    return texture;
-  }
-
-  function createRegionTexture(region, anisotropy) {
-    const c = document.createElement("canvas");
-    c.width = 840;
-    c.height = 300;
-    const ctx = c.getContext("2d");
-
-    const gradient = ctx.createLinearGradient(0, 0, 840, 300);
-    gradient.addColorStop(0, "rgba(10,34,76,.97)");
-    gradient.addColorStop(1, "rgba(3,14,36,.98)");
-    ctx.save();
-    ctx.shadowColor = "#ff9a2d";
-    ctx.shadowBlur = 24;
-    roundedRect(ctx, 24, 24, 792, 252, 28);
-    ctx.fillStyle = gradient;
-    ctx.fill();
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = "rgba(255,157,52,.84)";
-    ctx.stroke();
-    ctx.restore();
-
-    text(ctx, region.code, 420, 82, 37, "#f6fbff", "center", 850);
-    text(ctx, region.city, 420, 123, 24, "#a7bbd9", "center", 600);
-    ["AZ a", "AZ b", "AZ c"].forEach((label, index) => {
-      const x = 118 + index * 214;
-      roundedRect(ctx, x, 164, 176, 66, 16);
-      ctx.fillStyle = "rgba(2,11,31,.82)";
-      ctx.fill();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "rgba(255,162,63,.55)";
-      ctx.stroke();
-      text(ctx, label, x + 88, 198, 22, "#d9e7fa", "center", 750);
-    });
-
-    const texture = new T.CanvasTexture(c);
-    texture.encoding = T.sRGBEncoding;
-    texture.anisotropy = anisotropy;
-    texture.minFilter = T.LinearFilter;
-    texture.magFilter = T.LinearFilter;
     return texture;
   }
 
@@ -659,27 +396,42 @@
     ];
     rings.forEach((ring) => world.add(ring));
 
+    // The core Three.js globe remains untouched. Only clean 3D anchor points
+    // are added here; crisp brand icons live in the DOM overlay and are
+    // projected onto these anchors every frame.
     const nodeConfigs = [
-      { key: "developer", number: 1, title: "Developer", subtitle: "Write code · Commit & Push", type: "developer", accent: "#3c9cff", lat: 19, lon: -61, scale: [1.14, 0.55] },
-      { key: "git", number: 2, title: "Git Repository", subtitle: "Bitbucket · GitHub · GitLab", type: "git", accent: "#4c9cff", lat: 49, lon: -19, scale: [1.08, 0.51] },
-      { key: "cicd", number: 3, title: "CI/CD Pipeline", subtitle: "Security · Build · Test · Deploy", type: "cicd", accent: "#8468ff", lat: 30, lon: 50, scale: [1.13, 0.54] },
-      { key: "aws", number: 4, title: "AWS Cloud", subtitle: "Multi-Region · Multi-AZ", type: "aws", accent: "#ff9b2f", lat: 4, lon: 2, scale: [1.24, 0.59] },
-      { key: "cloudwatch", number: 5, title: "CloudWatch", subtitle: "Logs · Metrics · Alarms", type: "cloudwatch", accent: "#31dcec", lat: -31, lon: 48, scale: [1.12, 0.53] },
-      { key: "alerts", number: 6, title: "Alerts & Notifications", subtitle: "Slack · Phone · Email", type: "alerts", accent: "#ff982d", lat: -34, lon: -55, scale: [1.1, 0.52] }
+      { key: "developer", lat: 19, lon: -61, color: 0x49baff },
+      { key: "git", lat: 49, lon: -19, color: 0x4f9cff },
+      { key: "cicd", lat: 30, lon: 50, color: 0x8c72ff },
+      { key: "aws", lat: 4, lon: 2, color: 0xff9a2d },
+      { key: "cloudwatch", lat: -31, lon: 48, color: 0x31dcec },
+      { key: "alerts", lat: -34, lon: -55, color: 0xff982d }
     ];
 
+    const glowBlue = glowDotTexture("#45baff");
+    const glowOrange = glowDotTexture("#ff9a2d");
     const nodes = new Map();
+
     nodeConfigs.forEach((config) => {
-      const texture = createCardTexture(config, anisotropy);
-      const material = new T.SpriteMaterial({ map: texture, transparent: true, depthTest: true, depthWrite: false, opacity: 0.98 });
-      const sprite = new T.Sprite(material);
-      sprite.position.copy(latLonToVector(config.lat, config.lon, 2.19));
-      sprite.scale.set(config.scale[0], config.scale[1], 1);
-      sprite.userData.baseScale = sprite.scale.clone();
-      sprite.userData.config = config;
-      sprite.renderOrder = 8;
-      world.add(sprite);
-      nodes.set(config.key, sprite);
+      const anchor = new T.Object3D();
+      anchor.position.copy(latLonToVector(config.lat, config.lon, 2.12));
+      anchor.userData.config = config;
+      world.add(anchor);
+
+      const pin = new T.Sprite(new T.SpriteMaterial({
+        map: config.key === "aws" || config.key === "alerts" ? glowOrange : glowBlue,
+        color: config.color,
+        transparent: true,
+        opacity: 0.68,
+        depthWrite: false,
+        depthTest: true,
+        blending: T.AdditiveBlending
+      }));
+      pin.scale.setScalar(config.key === "aws" ? 0.16 : 0.11);
+      pin.renderOrder = 7;
+      anchor.add(pin);
+      anchor.userData.pin = pin;
+      nodes.set(config.key, anchor);
     });
 
     const regions = [
@@ -693,70 +445,365 @@
       { code: "AP-NORTHEAST-1", city: "Tokyo", lat: 35, lon: 70 }
     ];
 
-    const glowBlue = glowDotTexture("#45baff");
-    const glowOrange = glowDotTexture("#ff9a2d");
     const regionObjects = [];
-    const awsPosition = nodes.get("aws").position.clone();
     const regionCurves = [];
+    const awsPosition = nodes.get("aws").position.clone();
 
     regions.forEach((region, index) => {
-      const position = latLonToVector(region.lat, region.lon, 2.12);
-      const pin = new T.Sprite(new T.SpriteMaterial({ map: glowOrange, color: 0xffb15b, transparent: true, opacity: 0.92, depthWrite: false, depthTest: true, blending: T.AdditiveBlending }));
-      pin.position.copy(position);
-      pin.scale.setScalar(0.14);
+      const position = latLonToVector(region.lat, region.lon, 2.10);
+      const regionAnchor = new T.Object3D();
+      regionAnchor.position.copy(position);
+      world.add(regionAnchor);
+
+      const pin = new T.Sprite(new T.SpriteMaterial({
+        map: glowOrange,
+        color: 0xffb15b,
+        transparent: true,
+        opacity: 0.56,
+        depthWrite: false,
+        depthTest: true,
+        blending: T.AdditiveBlending
+      }));
+      pin.scale.setScalar(0.10);
       pin.renderOrder = 7;
-      world.add(pin);
+      regionAnchor.add(pin);
 
-      const label = new T.Sprite(new T.SpriteMaterial({ map: createRegionTexture(region, anisotropy), transparent: true, depthTest: true, depthWrite: false, opacity: 0.92 }));
-      const offset = position.clone().normalize().multiplyScalar(0.12).add(new T.Vector3(0, index % 2 === 0 ? 0.09 : -0.06, 0));
-      label.position.copy(position.clone().add(offset));
-      label.scale.set(0.52, 0.185, 1);
-      label.renderOrder = 8;
-      world.add(label);
+      // Three subtle Availability Zone lights replace the old text cards.
+      const azPins = [-1, 0, 1].map((offsetIndex) => {
+        const azPin = new T.Sprite(new T.SpriteMaterial({
+          map: glowOrange,
+          color: 0xffc06b,
+          transparent: true,
+          opacity: 0.25,
+          depthWrite: false,
+          depthTest: true,
+          blending: T.AdditiveBlending
+        }));
+        azPin.position.set(offsetIndex * 0.085, -0.075, 0.035 * Math.abs(offsetIndex));
+        azPin.scale.setScalar(0.045);
+        azPin.renderOrder = 8;
+        regionAnchor.add(azPin);
+        return azPin;
+      });
 
-      const arc = createArc(awsPosition, position, 0.34 + (index % 3) * 0.06, COLORS.orange, 0.43, false);
+      const arc = createArc(awsPosition, position, 0.30 + (index % 3) * 0.055, COLORS.orange, 0.12, false);
       world.add(arc.line);
 
-      const packet = new T.Sprite(new T.SpriteMaterial({ map: glowOrange, color: 0xffa33f, transparent: true, opacity: 0.9, depthWrite: false, depthTest: true, blending: T.AdditiveBlending }));
-      packet.scale.setScalar(0.095);
+      const packet = new T.Sprite(new T.SpriteMaterial({
+        map: glowOrange,
+        color: 0xffa33f,
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+        depthTest: true,
+        blending: T.AdditiveBlending
+      }));
+      packet.scale.setScalar(0.08);
       packet.renderOrder = 9;
       world.add(packet);
+
       regionCurves.push({ ...arc, packet, offset: index * 0.11 });
-      regionObjects.push({ pin, label, phase: index * 0.65 });
+      regionObjects.push({ anchor: regionAnchor, position, pin, azPins, phase: index * 0.65 });
     });
-
-    const lifecycleOrder = ["developer", "git", "cicd", "aws", "cloudwatch", "alerts"];
-    const lifecycleColors = [COLORS.blue, COLORS.blue, 0x8b73ff, COLORS.orange, COLORS.cyan, COLORS.orange];
-    const lifecycleCurves = [];
-
-    for (let index = 0; index < lifecycleOrder.length; index += 1) {
-      const fromKey = lifecycleOrder[index];
-      const toKey = lifecycleOrder[(index + 1) % lifecycleOrder.length];
-      const start = nodes.get(fromKey).position.clone();
-      const end = nodes.get(toKey).position.clone();
-      const arc = createArc(start, end, 0.48 + (index % 2) * 0.09, lifecycleColors[index], 0.78, index === 1);
-      world.add(arc.line);
-
-      const packet = new T.Sprite(new T.SpriteMaterial({ map: index === 3 || index === 5 ? glowOrange : glowBlue, color: lifecycleColors[index], transparent: true, opacity: 1, depthWrite: false, depthTest: true, blending: T.AdditiveBlending }));
-      packet.scale.setScalar(0.13);
-      packet.renderOrder = 10;
-      world.add(packet);
-      lifecycleCurves.push({ ...arc, packet, offset: index / lifecycleOrder.length });
-    }
 
     const pinPositions = [
       [18, -32], [2, -29], [-18, -18], [26, 10], [8, 22], [-11, 27], [34, 40],
       [14, 60], [-5, 66], [40, -60], [-24, -45], [0, 0], [-36, 10], [22, 72]
     ];
     const pulsePins = pinPositions.map(([lat, lon], index) => {
-      const pin = new T.Sprite(new T.SpriteMaterial({ map: index % 3 === 0 ? glowOrange : glowBlue, color: index % 3 === 0 ? 0xffa03d : 0x4fc2ff, transparent: true, opacity: 0.55, depthWrite: false, depthTest: true, blending: T.AdditiveBlending }));
+      const pin = new T.Sprite(new T.SpriteMaterial({
+        map: index % 3 === 0 ? glowOrange : glowBlue,
+        color: index % 3 === 0 ? 0xffa03d : 0x4fc2ff,
+        transparent: true,
+        opacity: 0.48,
+        depthWrite: false,
+        depthTest: true,
+        blending: T.AdditiveBlending
+      }));
       pin.position.copy(latLonToVector(lat, lon, 2.08));
-      pin.scale.setScalar(0.08);
+      pin.scale.setScalar(0.07);
       pin.userData.phase = index * 0.42;
       pin.renderOrder = 7;
       world.add(pin);
       return pin;
     });
+
+    const domNodes = new Map(
+      [...qsa("[data-node]", uiLayer || document)].map((element) => [element.dataset.node, element])
+    );
+    const stageIcons = qsa(".pipeline-stage", uiLayer || document);
+    const developerOrb = qs(".node-orb-developer", uiLayer || document);
+    const typingConsole = qs("#typing-console", uiLayer || document);
+    const gitCluster = qs(".icon-cluster-git", uiLayer || document);
+    const pipelineIcons = qs(".pipeline-stage-icons", uiLayer || document);
+    const awsOrb = qs(".node-orb-aws", uiLayer || document);
+    const cloudwatchOrb = qs(".node-orb-cloudwatch", uiLayer || document);
+    const alertsCluster = qs(".icon-cluster-alerts", uiLayer || document);
+
+    const overlayState = {
+      assetProgress: 0,
+      telemetryProgress: 0,
+      deploymentIntensity: 0,
+      pathReady: false,
+      primaryRegionIndex: 3
+    };
+
+    function projectLocalPoint(localPosition) {
+      world.updateMatrixWorld(true);
+
+      // Project the globe-local anchor into screen space.
+      const worldPoint = localPosition.clone().applyMatrix4(world.matrixWorld);
+      const projected = worldPoint.clone().project(camera);
+      const rect = stage.getBoundingClientRect();
+      const x = (projected.x * 0.5 + 0.5) * rect.width;
+      const y = (-projected.y * 0.5 + 0.5) * rect.height;
+
+      // IMPORTANT: projected.z is clip-space depth and is normally close to 1 for
+      // every visible object. Using it for opacity made every DOM icon almost
+      // transparent. Surface facing is the correct value for globe visibility.
+      const surfaceNormal = worldPoint.clone().normalize();
+      const toCamera = camera.position.clone().sub(worldPoint).normalize();
+      const facing = surfaceNormal.dot(toCamera);
+      const depthScale = clamp(0.78 + Math.max(0, facing) * 0.34, 0.76, 1.12);
+
+      return { x, y, facing, depthScale, z: projected.z };
+    }
+
+    function setProjectedNode(key) {
+      const anchor = nodes.get(key);
+      const element = domNodes.get(key);
+      if (!anchor || !element) return;
+
+      const point = projectLocalPoint(anchor.position);
+      const visibility = clamp((point.facing + 0.10) / 0.30, 0, 1);
+
+      element.style.left = `${point.x}px`;
+      element.style.top = `${point.y}px`;
+      element.style.setProperty("--node-scale", point.depthScale.toFixed(3));
+      element.style.zIndex = String(Math.round(60 + point.facing * 30));
+      element.style.opacity = visibility.toFixed(3);
+      element.style.visibility = visibility < 0.015 ? "hidden" : "visible";
+      element.style.filter = point.facing < 0.08 ? "blur(.45px)" : "none";
+    }
+
+    function centerInStage(element) {
+      if (!element) return { x: 0, y: 0 };
+      const elementRect = element.getBoundingClientRect();
+      const stageRect = stage.getBoundingClientRect();
+      return {
+        x: elementRect.left - stageRect.left + elementRect.width / 2,
+        y: elementRect.top - stageRect.top + elementRect.height / 2
+      };
+    }
+
+    function createSmoothPath(points, bend = 36) {
+      if (!points.length) return "";
+      let d = `M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`;
+      for (let index = 1; index < points.length; index += 1) {
+        const previous = points[index - 1];
+        const current = points[index];
+        const direction = index % 2 === 0 ? -1 : 1;
+        const controlX = (previous.x + current.x) / 2;
+        const controlY = (previous.y + current.y) / 2 + direction * bend;
+        d += ` Q ${controlX.toFixed(2)} ${controlY.toFixed(2)} ${current.x.toFixed(2)} ${current.y.toFixed(2)}`;
+      }
+      return d;
+    }
+
+    function placeOnSvgPath(element, path, progress) {
+      if (!element || !path || !path.getTotalLength) return;
+      const length = path.getTotalLength();
+      if (!Number.isFinite(length) || length <= 0) return;
+      const point = path.getPointAtLength(clamp(progress, 0, 1) * length);
+      element.style.left = `${point.x}px`;
+      element.style.top = `${point.y}px`;
+    }
+
+    function updateOverlayPaths() {
+      if (!uiLayer || !codePath || !monitorPath || !deploymentPath) return;
+      nodeConfigs.forEach(({ key }) => setProjectedNode(key));
+
+      const codePoints = [
+        centerInStage(developerOrb),
+        centerInStage(gitCluster),
+        ...stageIcons.map(centerInStage),
+        centerInStage(awsOrb)
+      ];
+      const monitorPoints = [centerInStage(awsOrb), centerInStage(cloudwatchOrb), centerInStage(alertsCluster)];
+      const primaryRegion = regionObjects[overlayState.primaryRegionIndex];
+      const regionPoint = primaryRegion ? projectLocalPoint(primaryRegion.position) : centerInStage(awsOrb);
+      const awsPoint = centerInStage(awsOrb);
+      const deploymentD = `M ${awsPoint.x.toFixed(2)} ${awsPoint.y.toFixed(2)} C ${(awsPoint.x + 94).toFixed(2)} ${(awsPoint.y + 74).toFixed(2)}, ${(regionPoint.x + 72).toFixed(2)} ${(regionPoint.y - 92).toFixed(2)}, ${regionPoint.x.toFixed(2)} ${regionPoint.y.toFixed(2)}`;
+
+      codePath.setAttribute("d", createSmoothPath(codePoints, 24));
+      monitorPath.setAttribute("d", createSmoothPath(monitorPoints, 48));
+      deploymentPath.setAttribute("d", deploymentD);
+      overlayState.pathReady = true;
+
+      placeOnSvgPath(applicationVersion, codePath, overlayState.assetProgress);
+      placeOnSvgPath(telemetryPulse, monitorPath, overlayState.telemetryProgress);
+    }
+
+    function prepareDeploymentStroke() {
+      if (!deploymentPath || !deploymentPath.getTotalLength) return 0;
+      const length = deploymentPath.getTotalLength();
+      deploymentPath.style.strokeDasharray = `${length}`;
+      deploymentPath.style.strokeDashoffset = `${length}`;
+      return length;
+    }
+
+    function setStaticOverlayState() {
+      [developerOrb, typingConsole, gitCluster, pipelineIcons, awsOrb, cloudwatchOrb, alertsCluster]
+        .filter(Boolean)
+        .forEach((element) => {
+          element.style.opacity = "1";
+          element.style.transform = "none";
+        });
+      if (typingCode) typingCode.textContent = 'git push origin main\nsecurity.scan()\nbuild(); test(); deploy();';
+      stageIcons.forEach((icon) => icon.classList.add("is-active"));
+      if (applicationVersion) applicationVersion.style.opacity = "0";
+      if (deploymentPath) deploymentPath.style.strokeDashoffset = "0";
+    }
+
+    function initGsapFlow() {
+      // GSAP itself is enough to run the lifecycle animation. ScrollTrigger is
+      // optional and only pauses/resumes the timeline outside the hero viewport.
+      if (!uiLayer || !gsapApi || reducedMotion) {
+        setStaticOverlayState();
+        return null;
+      }
+
+      const codeSample = [
+        'git add . && git commit -m "release v2.4.1"',
+        'git push origin main',
+        'security.scan({ snyk: true })',
+        'pipeline.build().test().deploy("aws")'
+      ].join("\n");
+      const typingState = { chars: 0 };
+
+      gsapApi.set([developerOrb, typingConsole], { autoAlpha: 0, y: 18, scale: 0.78 });
+      gsapApi.set([gitCluster, pipelineIcons, awsOrb, cloudwatchOrb, alertsCluster], { autoAlpha: 0.72, scale: 0.92 });
+      gsapApi.set(stageIcons, { opacity: 0.52, scale: 0.82, filter: "saturate(.6) brightness(.72)" });
+      gsapApi.set(applicationVersion, { autoAlpha: 0, scale: 0.6 });
+      gsapApi.set(telemetryPulse, { autoAlpha: 0, scale: 0.6 });
+      prepareDeploymentStroke();
+
+      const timeline = gsapApi.timeline({
+        paused: true,
+        repeat: -1,
+        repeatDelay: 1.25,
+        defaults: { ease: "power4.out" },
+        onRepeat: () => {
+          typingState.chars = 0;
+          if (typingCode) typingCode.textContent = "";
+          overlayState.assetProgress = 0;
+          overlayState.telemetryProgress = 0;
+          overlayState.deploymentIntensity = 0;
+          prepareDeploymentStroke();
+          stageIcons.forEach((icon) => icon.classList.remove("is-active"));
+        }
+      });
+
+      timeline
+        .addLabel("trigger")
+        .to(developerOrb, { autoAlpha: 1, y: 0, scale: 1, duration: 0.78, ease: "expo.out" }, "trigger")
+        .to(typingConsole, { autoAlpha: 1, y: 0, scale: 1, duration: 0.86, ease: "expo.out" }, "trigger+=0.12")
+        .to(typingState, {
+          chars: codeSample.length,
+          duration: 1.15,
+          ease: "none",
+          snap: { chars: 1 },
+          onStart: () => { if (typingCode) typingCode.textContent = ""; },
+          onUpdate: () => { if (typingCode) typingCode.textContent = codeSample.slice(0, typingState.chars); }
+        }, "trigger+=0.22")
+        .addLabel("pipeline", ">-0.08")
+        .to(gitCluster, { autoAlpha: 1, scale: 1.08, duration: 0.46, ease: "expo.out" }, "pipeline")
+        .to(gitCluster ? qsa(".brand-orb-icon", gitCluster) : [], {
+          scale: 1.14,
+          yoyo: true,
+          repeat: 1,
+          duration: 0.28,
+          stagger: 0.08,
+          ease: "power3.out"
+        }, "pipeline+=0.12")
+        .to(pipelineIcons, { autoAlpha: 1, scale: 1, duration: 0.55, ease: "expo.out" }, "pipeline+=0.55")
+        .to(applicationVersion, { autoAlpha: 1, scale: 1, duration: 0.32, ease: "back.out(2.2)" }, "pipeline+=0.06")
+        .to(overlayState, {
+          assetProgress: 1,
+          duration: 4.85,
+          ease: "none"
+        }, "pipeline+=0.02")
+        .to(stageIcons, {
+          opacity: 1,
+          scale: 1.18,
+          filter: "saturate(1.2) brightness(1.18)",
+          duration: 0.42,
+          stagger: 0.15,
+          ease: "power4.out",
+          onStart: () => stageIcons.forEach((icon) => icon.classList.add("is-active"))
+        }, "pipeline+=1.68")
+        .to(stageIcons, {
+          scale: 1,
+          duration: 0.38,
+          stagger: 0.15,
+          ease: "power3.out"
+        }, "pipeline+=2.12")
+        .addLabel("aws", "pipeline+=4.72")
+        .to(applicationVersion, { autoAlpha: 0, scale: 0.48, duration: 0.26, ease: "power2.in" }, "aws")
+        .to(awsOrb, { autoAlpha: 1, scale: 1.18, duration: 0.48, ease: "expo.out" }, "aws-=0.05")
+        .to(awsOrb, { scale: 1, duration: 0.55, ease: "elastic.out(1, .5)" }, "aws+=0.35")
+        .call(() => prepareDeploymentStroke(), null, "aws+=0.08")
+        .to(deploymentPath, { strokeDashoffset: 0, duration: 1.55, ease: "expo.out" }, "aws+=0.12")
+        .to(overlayState, { deploymentIntensity: 1, duration: 0.55, ease: "power4.out" }, "aws+=0.16")
+        .to(overlayState, { deploymentIntensity: 0.32, duration: 1.2, ease: "power2.out" }, "aws+=0.78")
+        .addLabel("observe", ">-0.15")
+        .to(telemetryPulse, { autoAlpha: 1, scale: 1, duration: 0.25 }, "observe")
+        .to(overlayState, { telemetryProgress: 1, duration: 1.55, ease: "power1.inOut" }, "observe")
+        .to(cloudwatchOrb, { autoAlpha: 1, scale: 1.16, duration: 0.42, ease: "expo.out" }, "observe+=0.42")
+        .to(cloudwatchOrb, { scale: 1, duration: 0.45 }, "observe+=0.78")
+        .to(alertsCluster, { autoAlpha: 1, scale: 1.06, duration: 0.42, ease: "expo.out" }, "observe+=1.05")
+        .to(alertsCluster ? qsa(".brand-orb-icon", alertsCluster) : [], {
+          scale: 1.18,
+          yoyo: true,
+          repeat: 1,
+          duration: 0.26,
+          stagger: 0.12,
+          ease: "power4.out"
+        }, "observe+=1.12")
+        .to(telemetryPulse, { autoAlpha: 0, scale: 0.5, duration: 0.22 }, "observe+=1.48")
+        .to([gitCluster, pipelineIcons, awsOrb, cloudwatchOrb, alertsCluster], {
+          scale: 0.96,
+          autoAlpha: 0.74,
+          duration: 0.75,
+          ease: "power2.out"
+        }, ">+=0.5")
+        .to([developerOrb, typingConsole], { autoAlpha: 0.72, duration: 0.45 }, "<")
+        .set(stageIcons, { opacity: 0.52, scale: 0.82, filter: "saturate(.6) brightness(.72)" })
+        .set(deploymentPath, { opacity: 0.95 });
+
+      if (ScrollTriggerApi) {
+        ScrollTriggerApi.create({
+          trigger: stage,
+          start: "top 92%",
+          end: "bottom 8%",
+          animation: timeline,
+          toggleActions: "play pause resume pause"
+        });
+      } else {
+        timeline.play(0);
+      }
+
+      // Safety: if ScrollTrigger does not activate immediately because of an
+      // unusual browser layout calculation, start the sequence once the hero is
+      // already visible. This keeps localhost and Vercel behavior identical.
+      window.setTimeout(() => {
+        const rect = stage.getBoundingClientRect();
+        const visible = rect.bottom > 0 && rect.top < window.innerHeight;
+        if (visible && timeline.paused()) timeline.play();
+      }, 120);
+
+      return timeline;
+    }
 
     let autoRotate = !reducedMotion;
     let dragging = false;
@@ -840,14 +887,13 @@
     resize();
 
     const clock = new T.Clock();
-    let currentStage = -1;
 
     function animate() {
       requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
-      const dt = Math.min(clock.getDelta(), 0.034);
+      clock.getDelta();
 
-      if (autoRotate && !dragging) targetRotationY += reducedMotion ? 0 : 0.00135;
+      if (autoRotate && !dragging) targetRotationY += reducedMotion ? 0 : 0.00115;
       if (!dragging) {
         targetRotationY += velocityY;
         targetRotationX += velocityX;
@@ -866,51 +912,52 @@
       rings[2].rotation.x += 0.00042;
       stars.rotation.y -= 0.00008;
 
-      lifecycleCurves.forEach((item, index) => {
-        const progress = (elapsed * 0.085 + item.offset) % 1;
-        item.packet.position.copy(item.curve.getPointAt(progress));
-        const glow = 0.75 + Math.sin(elapsed * 5 + index) * 0.2;
-        item.packet.material.opacity = glow;
-        item.packet.scale.setScalar(0.105 + glow * 0.045);
-      });
-
+      // Region deployment packets remain dormant until GSAP reaches AWS.
       regionCurves.forEach((item, index) => {
         const progress = (elapsed * 0.055 + item.offset) % 1;
         item.packet.position.copy(item.curve.getPointAt(progress));
-        item.packet.material.opacity = 0.55 + Math.sin(elapsed * 4 + index) * 0.22;
+        const pulse = 0.56 + Math.sin(elapsed * 4 + index) * 0.22;
+        item.packet.material.opacity = overlayState.deploymentIntensity * pulse;
+        item.line.material.opacity = 0.08 + overlayState.deploymentIntensity * 0.38;
       });
 
       const sharedPulse = 0.5 + 0.5 * Math.sin(elapsed * 2.8);
-      regionObjects.forEach((item, index) => {
+      regionObjects.forEach((item) => {
         const pulse = 0.55 + 0.45 * Math.sin(elapsed * 2.8 + item.phase) * sharedPulse;
-        item.pin.scale.setScalar(0.105 + pulse * 0.065);
-        item.pin.material.opacity = 0.54 + pulse * 0.42;
+        const deployBoost = overlayState.deploymentIntensity;
+        item.pin.scale.setScalar(0.075 + pulse * 0.035 + deployBoost * 0.055);
+        item.pin.material.opacity = 0.34 + pulse * 0.18 + deployBoost * 0.45;
+        item.azPins.forEach((azPin, azIndex) => {
+          const azPulse = 0.5 + 0.5 * Math.sin(elapsed * 5.2 + item.phase + azIndex * 0.7);
+          azPin.scale.setScalar(0.033 + azPulse * 0.018 + deployBoost * 0.025);
+          azPin.material.opacity = 0.13 + azPulse * 0.13 + deployBoost * 0.52;
+        });
       });
+
       pulsePins.forEach((pin) => {
         const pulse = 0.5 + 0.5 * Math.sin(elapsed * 2.8 + pin.userData.phase);
-        pin.scale.setScalar(0.06 + pulse * 0.065);
-        pin.material.opacity = 0.3 + pulse * 0.68;
+        pin.scale.setScalar(0.05 + pulse * 0.045);
+        pin.material.opacity = 0.2 + pulse * 0.48;
       });
 
-      const active = Math.floor(elapsed / 3.15) % lifecycleOrder.length;
-      if (active !== currentStage) {
-        currentStage = active;
-        if (flowCopy) flowCopy.textContent = lifecycleText[active];
-      }
-      lifecycleOrder.forEach((key, index) => {
-        const sprite = nodes.get(key);
-        const target = index === active ? 1.105 : 1;
-        const current = sprite.scale.x / sprite.userData.baseScale.x;
-        const scale = current + (target - current) * 0.08;
-        sprite.scale.copy(sprite.userData.baseScale).multiplyScalar(scale);
-        sprite.material.opacity += ((index === active ? 1 : 0.91) - sprite.material.opacity) * 0.08;
+      nodes.forEach((anchor, key) => {
+        const pin = anchor.userData.pin;
+        if (!pin) return;
+        const emphasis = key === "aws" ? overlayState.deploymentIntensity : 0;
+        const pulse = 0.5 + 0.5 * Math.sin(elapsed * 3.4 + anchor.position.x * 2);
+        pin.scale.setScalar((key === "aws" ? 0.12 : 0.08) + pulse * 0.04 + emphasis * 0.08);
+        pin.material.opacity = 0.38 + pulse * 0.34 + emphasis * 0.25;
       });
 
+      updateOverlayPaths();
       renderer.render(scene, camera);
     }
 
     renderer.render(scene, camera);
     stage.classList.add("scene-ready");
+    updateOverlayPaths();
+    initGsapFlow();
+    if (ScrollTriggerApi) ScrollTriggerApi.refresh();
     if (fallbackTimer) window.clearTimeout(fallbackTimer);
     if (loader) loader.setAttribute("aria-hidden", "true");
     animate();

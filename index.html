@@ -16,7 +16,7 @@
   <link rel="canonical" href="https://jawadabbasi.com" />
   <link rel="icon" href="/assets/favicon.svg?v=20260711-3" type="image/svg+xml" />
   <link rel="preload" as="image" href="/assets/prototype-fallback.png?v=20260711-3" />
-    <link rel="stylesheet" href="/styles.css?v=20260711-3" />
+    <link rel="stylesheet" href="/styles.css?v=20260712-gsap2" />
   <title>Jawad Abbasi | Senior DevOps Engineer</title>
   <noscript><style>.reveal{opacity:1!important;transform:none!important}.scene-loader{display:none!important}</style></noscript>
 </head>
@@ -73,18 +73,97 @@
             <strong>Interactive mode unavailable</strong>
             <span>The premium static command center remains fully visible.</span>
           </div>
-          <div class="flow-status" id="flow-status" aria-live="polite">
-            <span class="status-dot"></span>
-            <div><strong>LIVE DEVOPS LIFECYCLE</strong><small id="flow-copy">Developer is writing and pushing code</small></div>
+          <div class="globe-ui-layer" id="globe-ui-layer" aria-label="Animated DevSecOps delivery flow">
+            <svg class="pipeline-overlay" id="pipeline-overlay" aria-hidden="true">
+              <defs>
+                <linearGradient id="code-gradient" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#5bc6ff" />
+                  <stop offset=".55" stop-color="#2f7dff" />
+                  <stop offset="1" stop-color="#8a6dff" />
+                </linearGradient>
+                <linearGradient id="monitor-gradient" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#28dbff" />
+                  <stop offset="1" stop-color="#6dffcf" />
+                </linearGradient>
+                <filter id="blue-glow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="1.4" result="blur" />
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <filter id="orange-glow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="1.8" result="blur" />
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+              <path id="code-path" class="flow-path flow-path-code" d="" />
+              <path id="monitor-path" class="flow-path flow-path-monitor" d="" />
+              <path id="deployment-path" class="flow-path flow-path-deployment" d="" />
+            </svg>
+
+            <div class="devops-node developer-node" data-node="developer" aria-label="Developer writing and pushing code">
+              <button class="node-orb node-orb-developer" type="button" title="Developer">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <path d="M22 18 8 32l14 14M42 18l14 14-14 14M37 11 27 53" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <div class="typing-console" id="typing-console" aria-hidden="true">
+                <div class="typing-console-bar"><i></i><i></i><i></i></div>
+                <pre id="typing-code"></pre><span class="typing-caret"></span>
+              </div>
+            </div>
+
+            <div class="devops-node git-node" data-node="git" aria-label="Git repository">
+              <div class="icon-cluster icon-cluster-git">
+                <span class="brand-orb-icon" title="Bitbucket"><img src="/assets/icons/bitbucket.svg" alt="" /></span>
+                <span class="brand-orb-icon" title="GitHub"><img src="/assets/icons/github.svg" alt="" /></span>
+                <span class="brand-orb-icon" title="GitLab"><img src="/assets/icons/gitlab.svg" alt="" /></span>
+              </div>
+            </div>
+
+            <div class="devops-node pipeline-node" data-node="cicd" aria-label="DevSecOps CI/CD pipeline">
+              <div class="pipeline-stage-icons">
+                <span class="pipeline-stage" data-stage="security" title="Snyk security scan"><img src="/assets/icons/snyk.svg" alt="" /></span>
+                <span class="pipeline-stage" data-stage="build" title="Jenkins build"><img src="/assets/icons/jenkins.svg" alt="" /></span>
+                <span class="pipeline-stage" data-stage="test" title="Playwright tests"><img src="/assets/icons/playwright.svg" alt="" /></span>
+                <span class="pipeline-stage pipeline-stage-deploy" data-stage="deploy" title="Deploy to AWS"><img src="/assets/icons/aws.svg" alt="" /></span>
+              </div>
+            </div>
+
+            <div class="devops-node aws-node" data-node="aws" aria-label="AWS cloud deployment">
+              <button class="node-orb node-orb-aws" type="button" title="AWS Cloud"><img src="/assets/icons/aws.svg" alt="" /></button>
+            </div>
+
+            <div class="devops-node cloudwatch-node" data-node="cloudwatch" aria-label="CloudWatch observability">
+              <button class="node-orb node-orb-cloudwatch" type="button" title="CloudWatch monitoring">
+                <svg viewBox="0 0 64 64" aria-hidden="true">
+                  <path d="M10 48V26M22 48V18M34 48V31M46 48V12M8 51h45" fill="none" stroke="currentColor" stroke-width="4.2" stroke-linecap="round"/>
+                  <path d="m11 33 11-8 12 9 13-15" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="devops-node alerts-node" data-node="alerts" aria-label="Slack, phone and email notifications">
+              <div class="icon-cluster icon-cluster-alerts">
+                <span class="brand-orb-icon alert-slack" title="Slack"><img src="/assets/icons/slack.svg" alt="" /></span>
+                <span class="brand-orb-icon alert-phone" title="Phone">
+                  <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M20 8c4-2 8 11 9 15 1 3-5 5-7 7 4 8 8 12 16 16 2-2 4-8 7-7 4 1 17 5 15 9-3 7-8 10-15 8C26 51 13 38 8 19 6 12 13 7 20 8Z" fill="currentColor"/></svg>
+                </span>
+                <span class="brand-orb-icon alert-email" title="Email">
+                  <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M8 15h48v34H8z" fill="none" stroke="currentColor" stroke-width="4" rx="4"/><path d="m10 18 22 17 22-17" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+            </div>
+
+            <div class="application-version" id="application-version" aria-hidden="true">
+              <svg viewBox="0 0 64 64"><path d="m32 5 22 12v28L32 58 10 45V17Z" fill="none" stroke="currentColor" stroke-width="4"/><path d="m10 17 22 13 22-13M32 30v28" fill="none" stroke="currentColor" stroke-width="4"/></svg>
+              <span>v2.4.1</span>
+            </div>
+
+            <div class="telemetry-pulse" id="telemetry-pulse" aria-hidden="true"></div>
           </div>
+
           <div class="globe-controls">
             <button type="button" id="auto-rotate" aria-pressed="true"><span>◌</span> Auto rotate</button>
             <p><span>☝</span> Drag to rotate · Scroll to zoom</p>
-          </div>
-          <div class="flow-legend" aria-hidden="true">
-            <span><i class="blue"></i>Code flow</span>
-            <span><i class="cyan"></i>Monitoring</span>
-            <span><i class="orange"></i>Deployment & alerts</span>
           </div>
         </div>
       </div>
@@ -127,7 +206,9 @@
   </main>
 
   <footer class="site-footer section-shell"><span>© <span id="year"></span> Jawad Abbasi</span><a href="#top">Back to top ↑</a></footer>
-  <script src="/vendor/three.min.js?v=20260711-3" defer></script>
-  <script src="/script.js?v=20260711-3" defer></script>
+  <script src="/vendor/gsap.min.js?v=20260712-gsap2" defer></script>
+  <script src="/vendor/ScrollTrigger.min.js?v=20260712-gsap2" defer></script>
+  <script src="/vendor/three.min.js?v=20260712-gsap2" defer></script>
+  <script src="/script.js?v=20260712-gsap2" defer></script>
 </body>
 </html>
