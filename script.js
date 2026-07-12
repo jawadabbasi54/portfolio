@@ -59,13 +59,172 @@
   const ScrollTriggerApi = window.ScrollTrigger;
   if (gsapApi && ScrollTriggerApi) gsapApi.registerPlugin(ScrollTriggerApi);
 
+  /**
+   * Premium page motion outside the globe.
+   * The globe timeline and WebGL scene below remain unchanged.
+   */
+  function initPremiumPageMotion() {
+    if (!gsapApi || reducedMotion) return;
+
+    const sectionHeadings = qsa(".section-block .section-heading");
+    sectionHeadings.forEach((heading) => {
+      if (!heading.querySelector(".premium-heading-line")) {
+        const line = document.createElement("span");
+        line.className = "premium-heading-line";
+        line.setAttribute("aria-hidden", "true");
+        heading.appendChild(line);
+      }
+
+      const eyebrow = heading.querySelector(":scope > p");
+      const title = heading.querySelector("h2");
+      const line = heading.querySelector(".premium-heading-line");
+      if (!ScrollTriggerApi) return;
+
+      const tl = gsapApi.timeline({
+        scrollTrigger: {
+          trigger: heading,
+          start: "top 84%",
+          once: true
+        }
+      });
+      tl.fromTo(eyebrow, { autoAlpha: 0, y: 18, letterSpacing: ".34em" }, { autoAlpha: 1, y: 0, letterSpacing: ".22em", duration: .7, ease: "power4.out" })
+        .fromTo(title, { autoAlpha: 0, y: 42, rotateX: -7 }, { autoAlpha: 1, y: 0, rotateX: 0, duration: 1.05, ease: "expo.out" }, "-=.42")
+        .fromTo(line, { scaleX: 0, autoAlpha: .2 }, { scaleX: 1, autoAlpha: 1, duration: .8, ease: "power4.out" }, "-=.66");
+    });
+
+    const cardGroups = [
+      [".expertise-grid", ".glass-card"],
+      [".case-study", ".case-copy, .case-metrics > div"],
+      [".about-grid", ".section-heading, .about-copy"],
+      [".contact-panel", ".contact-panel > div"]
+    ];
+
+    if (ScrollTriggerApi) {
+      cardGroups.forEach(([triggerSelector, targetSelector]) => {
+        const trigger = qs(triggerSelector);
+        if (!trigger) return;
+        const targets = qsa(targetSelector, trigger.closest("section") || document);
+        if (!targets.length) return;
+        gsapApi.fromTo(targets,
+          { autoAlpha: 0, y: 44, scale: .965 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            duration: .9,
+            stagger: .11,
+            ease: "expo.out",
+            scrollTrigger: { trigger, start: "top 82%", once: true }
+          }
+        );
+      });
+
+      const experienceCards = qsa(".crystal-experience-card");
+      experienceCards.forEach((card, index) => {
+        gsapApi.fromTo(card,
+          { autoAlpha: 0, x: index % 2 === 0 ? -54 : 54, y: 26, rotateY: index % 2 === 0 ? -3 : 3 },
+          {
+            autoAlpha: 1,
+            x: 0,
+            y: 0,
+            rotateY: 0,
+            duration: 1.05,
+            ease: "expo.out",
+            scrollTrigger: { trigger: card, start: "top 86%", once: true }
+          }
+        );
+      });
+
+      const timeline = qs(".crystal-timeline");
+      const timelineProgress = qs(".timeline-progress");
+      if (timeline && timelineProgress) {
+        gsapApi.to(timelineProgress, {
+          scaleY: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: timeline,
+            start: "top 72%",
+            end: "bottom 68%",
+            scrub: .55
+          }
+        });
+      }
+
+      const scrollRail = qs(".page-scroll-rail");
+      const scrollProgress = qs(".page-scroll-progress");
+      const scrollKey = qs(".page-scroll-key");
+      const contact = qs("#contact");
+      if (scrollRail && scrollProgress && scrollKey && contact) {
+        gsapApi.to(scrollProgress, {
+          scaleY: 1,
+          ease: "none",
+          scrollTrigger: { trigger: document.documentElement, start: "top top", endTrigger: contact, end: "bottom bottom", scrub: .35 }
+        });
+        gsapApi.to(scrollKey, {
+          y: 176,
+          ease: "none",
+          scrollTrigger: { trigger: document.documentElement, start: "top top", endTrigger: contact, end: "bottom bottom", scrub: .35 }
+        });
+        gsapApi.to(scrollRail, {
+          autoAlpha: 0,
+          y: -18,
+          scrollTrigger: { trigger: contact, start: "top 62%", toggleActions: "play none none reverse" },
+          duration: .45,
+          ease: "power2.out"
+        });
+      }
+    }
+
+    // A soft looping arrow cue makes the primary journey action feel alive.
+    qsa(".button-primary > span, .contact-link > i").forEach((arrow, index) => {
+      gsapApi.to(arrow, {
+        x: 5,
+        duration: .72 + index * .05,
+        repeat: -1,
+        yoyo: true,
+        ease: "power1.inOut",
+        delay: index * .12
+      });
+    });
+
+    // Lightweight GSAP glass tilt for non-globe cards only.
+    qsa(".glass-card, .case-study, .crystal-experience-card, .about-copy, .contact-panel").forEach((card) => {
+      const rotateX = gsapApi.quickTo(card, "rotateX", { duration: .55, ease: "power3.out" });
+      const rotateY = gsapApi.quickTo(card, "rotateY", { duration: .55, ease: "power3.out" });
+      const lift = gsapApi.quickTo(card, "y", { duration: .45, ease: "power3.out" });
+
+      card.addEventListener("pointermove", (event) => {
+        if (event.pointerType === "touch") return;
+        const rect = card.getBoundingClientRect();
+        const px = (event.clientX - rect.left) / rect.width - .5;
+        const py = (event.clientY - rect.top) / rect.height - .5;
+        rotateY(px * 4.2);
+        rotateX(py * -3.2);
+        lift(-5);
+      });
+      card.addEventListener("pointerleave", () => {
+        rotateX(0);
+        rotateY(0);
+        lift(0);
+      });
+    });
+  }
+
+  initPremiumPageMotion();
+
   const uiLayer = qs("#globe-ui-layer");
   const codePath = qs("#code-path");
   const monitorPath = qs("#monitor-path");
-  const deploymentPath = qs("#deployment-path");
+  const deploymentPaths = qsa(".deployment-wave-path", uiLayer || document);
+  const deploymentPath = deploymentPaths[0] || null;
+  const feedbackPath = qs("#feedback-path");
   const applicationVersion = qs("#application-version");
+  const deploymentWavePulse = qs("#deployment-wave-pulse");
   const telemetryPulse = qs("#telemetry-pulse");
+  const incidentNotification = qs("#incident-notification");
   const typingCode = qs("#typing-code");
+  const regionOverlayLayer = qs("#region-overlay-layer");
+  const layerButtons = qsa("[data-flow-layer]", stage || document);
 
 
   let fallbackTimer = null;
@@ -225,7 +384,7 @@
     const camera = new T.PerspectiveCamera(34, 1, 0.1, 100);
     camera.position.set(0, 0.05, 8.6);
 
-    const stars = createStars(window.innerWidth < 760 ? 650 : 1200);
+    const stars = createStars(window.innerWidth < 760 ? 420 : 760);
     scene.add(stars);
 
     const world = new T.Group();
@@ -434,17 +593,21 @@
       nodes.set(config.key, anchor);
     });
 
+    // AWS regions use real city coordinates. Only the three deployment-wave
+    // destinations keep compact labels visible; the rest remain clean pins and
+    // reveal their full detail card on hover, keyboard focus, or click.
     const regions = [
-      { code: "US-EAST-1", city: "N. Virginia", lat: 37, lon: -73 },
-      { code: "US-WEST-2", city: "Oregon", lat: 39, lon: -48 },
-      { code: "SA-EAST-1", city: "São Paulo", lat: -13, lon: -64 },
-      { code: "EU-WEST-1", city: "Ireland", lat: 36, lon: -5 },
-      { code: "EU-CENTRAL-1", city: "Frankfurt", lat: 21, lon: 15 },
-      { code: "AP-SOUTH-1", city: "Mumbai", lat: -7, lon: 41 },
-      { code: "AP-SOUTHEAST-1", city: "Singapore", lat: 10, lon: 61 },
-      { code: "AP-NORTHEAST-1", city: "Tokyo", lat: 35, lon: 70 }
+      { code: "US-EAST-1", city: "N. Virginia", lat: 38.95, lon: -77.45, featured: true, cluster: "north-america", labelOffset: [-48, -58] },
+      { code: "US-WEST-2", city: "Oregon", lat: 45.52, lon: -122.68, cluster: "north-america" },
+      { code: "SA-EAST-1", city: "São Paulo", lat: -23.55, lon: -46.63, cluster: "south-america" },
+      { code: "EU-WEST-1", city: "Ireland", lat: 53.35, lon: -6.26, featured: true, cluster: "europe", labelOffset: [-42, -62], clusterCount: 1 },
+      { code: "EU-CENTRAL-1", city: "Frankfurt", lat: 50.11, lon: 8.68, cluster: "europe" },
+      { code: "AP-SOUTH-1", city: "Mumbai", lat: 19.08, lon: 72.88, featured: true, cluster: "asia-pacific", labelOffset: [36, -56], clusterCount: 2 },
+      { code: "AP-SOUTHEAST-1", city: "Singapore", lat: 1.35, lon: 103.82, cluster: "asia-pacific" },
+      { code: "AP-NORTHEAST-1", city: "Tokyo", lat: 35.68, lon: 139.69, cluster: "asia-pacific" }
     ];
 
+    const waveRouteIndices = [0, 3, 5]; // US-East-1 → EU-West-1 → AP-South-1
     const regionObjects = [];
     const regionCurves = [];
     const awsPosition = nodes.get("aws").position.clone();
@@ -457,58 +620,129 @@
 
       const pin = new T.Sprite(new T.SpriteMaterial({
         map: glowOrange,
-        color: 0xffb15b,
+        color: region.featured ? 0xffb15b : 0xffa34a,
         transparent: true,
-        opacity: 0.56,
+        opacity: region.featured ? 0.62 : 0.40,
         depthWrite: false,
         depthTest: true,
         blending: T.AdditiveBlending
       }));
-      pin.scale.setScalar(0.10);
+      pin.scale.setScalar(region.featured ? 0.105 : 0.075);
       pin.renderOrder = 7;
       regionAnchor.add(pin);
 
-      // Three subtle Availability Zone lights replace the old text cards.
+      // Three compact AZ lights appear on the globe; the readable AZ names live
+      // in the hover/click card rather than permanently occupying the scene.
       const azPins = [-1, 0, 1].map((offsetIndex) => {
         const azPin = new T.Sprite(new T.SpriteMaterial({
           map: glowOrange,
           color: 0xffc06b,
           transparent: true,
-          opacity: 0.25,
+          opacity: region.featured ? 0.24 : 0.11,
           depthWrite: false,
           depthTest: true,
           blending: T.AdditiveBlending
         }));
-        azPin.position.set(offsetIndex * 0.085, -0.075, 0.035 * Math.abs(offsetIndex));
-        azPin.scale.setScalar(0.045);
+        azPin.position.set(offsetIndex * 0.078, -0.07, 0.032 * Math.abs(offsetIndex));
+        azPin.scale.setScalar(region.featured ? 0.042 : 0.031);
         azPin.renderOrder = 8;
         regionAnchor.add(azPin);
         return azPin;
       });
 
-      const arc = createArc(awsPosition, position, 0.30 + (index % 3) * 0.055, COLORS.orange, 0.12, false);
+      regionObjects.push({
+        region,
+        index,
+        anchor: regionAnchor,
+        position,
+        pin,
+        azPins,
+        marker: null,
+        phase: index * 0.65,
+        waveBoost: 0
+      });
+    });
+
+    // Only three sequential deployment arcs are created. This replaces the old
+    // always-on fan of lines with a deliberate AWS deployment wave.
+    waveRouteIndices.forEach((regionIndex, step) => {
+      const start = step === 0 ? awsPosition : regionObjects[waveRouteIndices[step - 1]].position;
+      const end = regionObjects[regionIndex].position;
+      const arc = createArc(start, end, 0.34 + step * 0.055, COLORS.orange, 0, false);
+      arc.line.material.opacity = 0;
       world.add(arc.line);
 
       const packet = new T.Sprite(new T.SpriteMaterial({
         map: glowOrange,
-        color: 0xffa33f,
+        color: 0xffad4d,
         transparent: true,
         opacity: 0,
         depthWrite: false,
         depthTest: true,
         blending: T.AdditiveBlending
       }));
-      packet.scale.setScalar(0.08);
+      packet.scale.setScalar(0.09);
       packet.renderOrder = 9;
       world.add(packet);
 
-      regionCurves.push({ ...arc, packet, offset: index * 0.11 });
-      regionObjects.push({ anchor: regionAnchor, position, pin, azPins, phase: index * 0.65 });
+      regionCurves.push({
+        ...arc,
+        packet,
+        destinationIndex: regionIndex,
+        step,
+        state: { progress: 0, intensity: 0 }
+      });
     });
 
+    if (regionOverlayLayer) {
+      regionObjects.forEach((item) => {
+        const { region, index } = item;
+        const marker = document.createElement("button");
+        marker.type = "button";
+        marker.className = `region-marker${region.featured ? " is-featured" : " is-pin-only"}`;
+        marker.dataset.regionIndex = String(index);
+        marker.dataset.cluster = region.cluster;
+        marker.setAttribute("aria-expanded", "false");
+        marker.setAttribute("aria-label", `${region.code}, ${region.city}, three Availability Zones`);
+        const clusterBadge = region.clusterCount ? `<i class="region-cluster-count">+${region.clusterCount}</i>` : "";
+        const compactLabel = region.featured
+          ? `<span class="region-compact-label" style="--label-x:${region.labelOffset[0]}px;--label-y:${region.labelOffset[1]}px"><strong>${region.code}</strong><small>${region.city}</small>${clusterBadge}</span>`
+          : "";
+        marker.innerHTML = `
+          <span class="region-pin-core"><i></i></span>
+          ${compactLabel}
+          <span class="region-detail-card">
+            <strong>${region.code}</strong>
+            <small>${region.city}</small>
+            <span class="region-az-row"><em>AZ-A</em><em>AZ-B</em><em>AZ-C</em></span>
+          </span>`;
+
+        marker.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const nextOpen = !marker.classList.contains("is-open");
+          qsa(".region-marker.is-open", regionOverlayLayer).forEach((openMarker) => {
+            openMarker.classList.remove("is-open");
+            openMarker.setAttribute("aria-expanded", "false");
+          });
+          marker.classList.toggle("is-open", nextOpen);
+          marker.setAttribute("aria-expanded", String(nextOpen));
+        });
+
+        regionOverlayLayer.appendChild(marker);
+        item.marker = marker;
+      });
+
+      stage.addEventListener("click", () => {
+        qsa(".region-marker.is-open", regionOverlayLayer).forEach((marker) => {
+          marker.classList.remove("is-open");
+          marker.setAttribute("aria-expanded", "false");
+        });
+      });
+    }
+
     const pinPositions = [
-      [18, -32], [2, -29], [-18, -18], [26, 10], [8, 22], [-11, 27], [34, 40],
-      [14, 60], [-5, 66], [40, -60], [-24, -45], [0, 0], [-36, 10], [22, 72]
+      [18, -32], [-18, -18], [26, 10], [-11, 27], [34, 40],
+      [-5, 66], [-24, -45], [-36, 10]
     ];
     const pulsePins = pinPositions.map(([lat, lon], index) => {
       const pin = new T.Sprite(new T.SpriteMaterial({
@@ -543,10 +777,41 @@
     const overlayState = {
       assetProgress: 0,
       telemetryProgress: 0,
+      feedbackProgress: 0,
       deploymentIntensity: 0,
-      pathReady: false,
-      primaryRegionIndex: 3
+      deploymentWaveIndex: 0,
+      deploymentWaveProgress: 0,
+      activeLayer: "all",
+      pathReady: false
     };
+
+    function applyLayerMode(mode = "all") {
+      overlayState.activeLayer = mode;
+      stage.dataset.activeLayer = mode;
+
+      qsa("[data-layers]", stage).forEach((element) => {
+        const layers = (element.dataset.layers || "").split(/\s+/).filter(Boolean);
+        const focused = mode === "all" || layers.includes(mode);
+        element.classList.toggle("is-layer-muted", !focused);
+        element.classList.toggle("is-layer-focused", mode !== "all" && focused);
+      });
+
+      layerButtons.forEach((button) => {
+        const pressed = mode === "all" || button.dataset.flowLayer === mode;
+        button.setAttribute("aria-pressed", String(pressed));
+      });
+    }
+
+    function initLayerControls() {
+      if (!layerButtons.length) return;
+      layerButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const requested = button.dataset.flowLayer;
+          applyLayerMode(overlayState.activeLayer === requested ? "all" : requested);
+        });
+      });
+      applyLayerMode("all");
+    }
 
     function projectLocalPoint(localPosition) {
       world.updateMatrixWorld(true);
@@ -586,6 +851,23 @@
       element.style.filter = point.facing < 0.08 ? "blur(.45px)" : "none";
     }
 
+    function updateRegionMarkers() {
+      regionObjects.forEach((item) => {
+        if (!item.marker) return;
+        const point = projectLocalPoint(item.position);
+        const visibility = item.region.featured
+          ? clamp((point.facing + 0.25) / 0.18, 0, 1)
+          : clamp((point.facing + 0.10) / 0.28, 0, 1);
+        item.marker.style.left = `${point.x}px`;
+        item.marker.style.top = `${point.y}px`;
+        item.marker.style.opacity = visibility.toFixed(3);
+        item.marker.style.visibility = visibility < 0.025 ? "hidden" : "visible";
+        item.marker.style.zIndex = String(Math.round(54 + point.facing * 28));
+        item.marker.style.setProperty("--region-scale", clamp(point.depthScale * 0.92, 0.72, 1.04).toFixed(3));
+        item.marker.classList.toggle("is-backside", point.facing < (item.region.featured ? -0.22 : 0.02));
+      });
+    }
+
     function centerInStage(element) {
       if (!element) return { x: 0, y: 0 };
       const elementRect = element.getBoundingClientRect();
@@ -620,8 +902,9 @@
     }
 
     function updateOverlayPaths() {
-      if (!uiLayer || !codePath || !monitorPath || !deploymentPath) return;
+      if (!uiLayer || !codePath || !monitorPath || !deploymentPaths.length || !feedbackPath) return;
       nodeConfigs.forEach(({ key }) => setProjectedNode(key));
+      updateRegionMarkers();
 
       const codePoints = [
         centerInStage(developerOrb),
@@ -630,26 +913,132 @@
         centerInStage(awsOrb)
       ];
       const monitorPoints = [centerInStage(awsOrb), centerInStage(cloudwatchOrb), centerInStage(alertsCluster)];
-      const primaryRegion = regionObjects[overlayState.primaryRegionIndex];
-      const regionPoint = primaryRegion ? projectLocalPoint(primaryRegion.position) : centerInStage(awsOrb);
+      const alertPoint = centerInStage(alertsCluster);
+      const developerPoint = centerInStage(developerOrb);
+      const stageRect = stage.getBoundingClientRect();
+      const loopX = Math.max(34, Math.min(alertPoint.x, developerPoint.x) - 94);
+      const loopY = Math.min(stageRect.height - 74, Math.max(alertPoint.y, developerPoint.y) + 112);
+      const feedbackD = `M ${alertPoint.x.toFixed(2)} ${alertPoint.y.toFixed(2)} C ${(alertPoint.x - 86).toFixed(2)} ${(alertPoint.y + 28).toFixed(2)}, ${loopX.toFixed(2)} ${loopY.toFixed(2)}, ${loopX.toFixed(2)} ${loopY.toFixed(2)} C ${loopX.toFixed(2)} ${(developerPoint.y + 72).toFixed(2)}, ${(developerPoint.x - 80).toFixed(2)} ${(developerPoint.y + 44).toFixed(2)}, ${developerPoint.x.toFixed(2)} ${developerPoint.y.toFixed(2)}`;
+
       const awsPoint = centerInStage(awsOrb);
-      const deploymentD = `M ${awsPoint.x.toFixed(2)} ${awsPoint.y.toFixed(2)} C ${(awsPoint.x + 94).toFixed(2)} ${(awsPoint.y + 74).toFixed(2)}, ${(regionPoint.x + 72).toFixed(2)} ${(regionPoint.y - 92).toFixed(2)}, ${regionPoint.x.toFixed(2)} ${regionPoint.y.toFixed(2)}`;
+      const routePoints = waveRouteIndices.map((regionIndex) => projectLocalPoint(regionObjects[regionIndex].position));
+      const routeStarts = [awsPoint, routePoints[0], routePoints[1]];
+      deploymentPaths.forEach((path, index) => {
+        const start = routeStarts[index];
+        const end = routePoints[index];
+        if (!start || !end) return;
+        const distance = Math.hypot(end.x - start.x, end.y - start.y);
+        const lift = Math.min(128, Math.max(62, distance * 0.24)) + index * 8;
+        const controlX1 = start.x + (end.x - start.x) * 0.34;
+        const controlX2 = start.x + (end.x - start.x) * 0.68;
+        const controlY = Math.min(start.y, end.y) - lift;
+        path.setAttribute("d", `M ${start.x.toFixed(2)} ${start.y.toFixed(2)} C ${controlX1.toFixed(2)} ${controlY.toFixed(2)}, ${controlX2.toFixed(2)} ${controlY.toFixed(2)}, ${end.x.toFixed(2)} ${end.y.toFixed(2)}`);
+      });
 
       codePath.setAttribute("d", createSmoothPath(codePoints, 24));
       monitorPath.setAttribute("d", createSmoothPath(monitorPoints, 48));
-      deploymentPath.setAttribute("d", deploymentD);
+      feedbackPath.setAttribute("d", feedbackD);
       overlayState.pathReady = true;
 
       placeOnSvgPath(applicationVersion, codePath, overlayState.assetProgress);
       placeOnSvgPath(telemetryPulse, monitorPath, overlayState.telemetryProgress);
+      placeOnSvgPath(incidentNotification, feedbackPath, overlayState.feedbackProgress);
+      const activeDeploymentPath = deploymentPaths[overlayState.deploymentWaveIndex] || deploymentPaths[0];
+      placeOnSvgPath(deploymentWavePulse, activeDeploymentPath, overlayState.deploymentWaveProgress);
     }
 
-    function prepareDeploymentStroke() {
-      if (!deploymentPath || !deploymentPath.getTotalLength) return 0;
-      const length = deploymentPath.getTotalLength();
-      deploymentPath.style.strokeDasharray = `${length}`;
-      deploymentPath.style.strokeDashoffset = `${length}`;
-      return length;
+    function prepareDeploymentStrokes() {
+      return deploymentPaths.map((path) => {
+        if (!path || !path.getTotalLength) return 0;
+        const length = path.getTotalLength();
+        path.style.strokeDasharray = `${length}`;
+        path.style.strokeDashoffset = `${length}`;
+        path.style.opacity = "0";
+        return length;
+      });
+    }
+
+    function resetRegionWaveState() {
+      overlayState.deploymentWaveIndex = 0;
+      overlayState.deploymentWaveProgress = 0;
+      regionCurves.forEach((item) => {
+        item.state.progress = 0;
+        item.state.intensity = 0;
+        item.line.material.opacity = 0;
+        item.packet.material.opacity = 0;
+      });
+      regionObjects.forEach((item) => {
+        item.waveBoost = 0;
+        if (item.marker) item.marker.classList.remove("is-deployment-active");
+      });
+    }
+
+    function setActiveWaveRegion(regionIndex) {
+      regionObjects.forEach((item, index) => {
+        if (!item.marker) return;
+        item.marker.classList.toggle("is-deployment-active", index === regionIndex);
+      });
+    }
+
+    let deploymentWaveTimeline = null;
+
+    function runDeploymentWave() {
+      if (!deploymentPaths.length) return null;
+      if (!gsapApi || reducedMotion) {
+        deploymentPaths.forEach((path) => {
+          path.style.strokeDashoffset = "0";
+          path.style.opacity = ".72";
+        });
+        regionObjects.forEach((item, index) => {
+          if (item.marker) item.marker.classList.toggle("is-deployment-active", waveRouteIndices.includes(index));
+        });
+        return null;
+      }
+
+      if (deploymentWaveTimeline) deploymentWaveTimeline.kill();
+      resetRegionWaveState();
+      prepareDeploymentStrokes();
+      gsapApi.set(deploymentWavePulse, { autoAlpha: 0, scale: 0.55 });
+
+      deploymentWaveTimeline = gsapApi.timeline({ defaults: { ease: "power2.inOut" } });
+
+      regionCurves.forEach((curveItem, step) => {
+        const destination = regionObjects[curveItem.destinationIndex];
+        const path = deploymentPaths[step];
+        const label = `region-wave-${step}`;
+        deploymentWaveTimeline.addLabel(label, step === 0 ? 0 : ">-0.06");
+        deploymentWaveTimeline
+          .call(() => {
+            overlayState.deploymentWaveIndex = step;
+            overlayState.deploymentWaveProgress = 0;
+            setActiveWaveRegion(curveItem.destinationIndex);
+          }, null, label)
+          .to(path, { strokeDashoffset: 0, opacity: 1, duration: 0.92, ease: "expo.out" }, label)
+          .to(deploymentWavePulse, { autoAlpha: 1, scale: 1, duration: 0.16, ease: "back.out(2)" }, label)
+          .to(overlayState, { deploymentWaveProgress: 1, duration: 0.92, ease: "power2.inOut" }, label)
+          .to(curveItem.state, { progress: 1, intensity: 1, duration: 0.92, ease: "power2.inOut" }, label)
+          .to(destination, { waveBoost: 1, duration: 0.22, ease: "expo.out" }, `${label}+=0.68`)
+          .to(destination, { waveBoost: 0.18, duration: 0.52, ease: "power2.out" }, `${label}+=0.90`)
+          .to(path, { opacity: 0.18, duration: 0.34, ease: "power2.out" }, `${label}+=0.84`)
+          .to(curveItem.state, { intensity: 0.12, duration: 0.34, ease: "power2.out" }, `${label}+=0.84`);
+      });
+
+      deploymentWaveTimeline
+        .to(deploymentWavePulse, { autoAlpha: 0, scale: 0.55, duration: 0.22 }, ">-0.14")
+        .call(() => setActiveWaveRegion(-1), null, ">+0.18")
+        .to(deploymentPaths, { opacity: 0, duration: 0.58, ease: "power2.out" }, ">+0.55");
+
+      return deploymentWaveTimeline;
+    }
+
+    if (awsOrb) {
+      awsOrb.style.cursor = "pointer";
+      awsOrb.setAttribute("aria-label", "Replay multi-region deployment wave");
+      awsOrb.addEventListener("click", (event) => {
+        event.stopPropagation();
+        applyLayerMode("deployment");
+        runDeploymentWave();
+      });
     }
 
     function setStaticOverlayState() {
@@ -662,7 +1051,16 @@
       if (typingCode) typingCode.textContent = 'git push origin main\nsecurity.scan()\nbuild(); test(); deploy();';
       stageIcons.forEach((icon) => icon.classList.add("is-active"));
       if (applicationVersion) applicationVersion.style.opacity = "0";
-      if (deploymentPath) deploymentPath.style.strokeDashoffset = "0";
+      if (incidentNotification) incidentNotification.style.opacity = "0";
+      deploymentPaths.forEach((path) => {
+        path.style.strokeDashoffset = "0";
+        path.style.opacity = ".46";
+      });
+      waveRouteIndices.forEach((regionIndex) => {
+        const marker = regionObjects[regionIndex] && regionObjects[regionIndex].marker;
+        if (marker) marker.classList.add("is-static-featured");
+      });
+      if (feedbackPath) feedbackPath.style.opacity = ".78";
     }
 
     function initGsapFlow() {
@@ -685,8 +1083,12 @@
       gsapApi.set([gitCluster, pipelineIcons, awsOrb, cloudwatchOrb, alertsCluster], { autoAlpha: 0.72, scale: 0.92 });
       gsapApi.set(stageIcons, { opacity: 0.52, scale: 0.82, filter: "saturate(.6) brightness(.72)" });
       gsapApi.set(applicationVersion, { autoAlpha: 0, scale: 0.6 });
+      gsapApi.set(deploymentWavePulse, { autoAlpha: 0, scale: 0.55 });
       gsapApi.set(telemetryPulse, { autoAlpha: 0, scale: 0.6 });
-      prepareDeploymentStroke();
+      gsapApi.set(incidentNotification, { autoAlpha: 0, scale: 0.55 });
+      gsapApi.set(feedbackPath, { opacity: 0.34 });
+      resetRegionWaveState();
+      prepareDeploymentStrokes();
 
       const timeline = gsapApi.timeline({
         paused: true,
@@ -698,8 +1100,11 @@
           if (typingCode) typingCode.textContent = "";
           overlayState.assetProgress = 0;
           overlayState.telemetryProgress = 0;
+          overlayState.feedbackProgress = 0;
           overlayState.deploymentIntensity = 0;
-          prepareDeploymentStroke();
+          if (deploymentWaveTimeline) deploymentWaveTimeline.kill();
+          resetRegionWaveState();
+          prepareDeploymentStrokes();
           stageIcons.forEach((icon) => icon.classList.remove("is-active"));
         }
       });
@@ -752,11 +1157,10 @@
         .to(applicationVersion, { autoAlpha: 0, scale: 0.48, duration: 0.26, ease: "power2.in" }, "aws")
         .to(awsOrb, { autoAlpha: 1, scale: 1.18, duration: 0.48, ease: "expo.out" }, "aws-=0.05")
         .to(awsOrb, { scale: 1, duration: 0.55, ease: "elastic.out(1, .5)" }, "aws+=0.35")
-        .call(() => prepareDeploymentStroke(), null, "aws+=0.08")
-        .to(deploymentPath, { strokeDashoffset: 0, duration: 1.55, ease: "expo.out" }, "aws+=0.12")
+        .call(() => runDeploymentWave(), null, "aws+=0.10")
         .to(overlayState, { deploymentIntensity: 1, duration: 0.55, ease: "power4.out" }, "aws+=0.16")
-        .to(overlayState, { deploymentIntensity: 0.32, duration: 1.2, ease: "power2.out" }, "aws+=0.78")
-        .addLabel("observe", ">-0.15")
+        .to(overlayState, { deploymentIntensity: 0.24, duration: 2.2, ease: "power2.out" }, "aws+=0.78")
+        .addLabel("observe", "aws+=3.10")
         .to(telemetryPulse, { autoAlpha: 1, scale: 1, duration: 0.25 }, "observe")
         .to(overlayState, { telemetryProgress: 1, duration: 1.55, ease: "power1.inOut" }, "observe")
         .to(cloudwatchOrb, { autoAlpha: 1, scale: 1.16, duration: 0.42, ease: "expo.out" }, "observe+=0.42")
@@ -771,15 +1175,28 @@
           ease: "power4.out"
         }, "observe+=1.12")
         .to(telemetryPulse, { autoAlpha: 0, scale: 0.5, duration: 0.22 }, "observe+=1.48")
+        .addLabel("feedback", "observe+=1.54")
+        .to(feedbackPath, { opacity: 1, duration: 0.3, ease: "power2.out" }, "feedback")
+        .to(incidentNotification, { autoAlpha: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, "feedback+=0.02")
+        .to(overlayState, { feedbackProgress: 1, duration: 1.95, ease: "power2.inOut" }, "feedback+=0.05")
+        .to(developerOrb, { scale: 1.22, duration: 0.34, ease: "expo.out" }, "feedback+=1.52")
+        .to(developerOrb, { scale: 1, duration: 0.5, ease: "elastic.out(1, .5)" }, "feedback+=1.78")
+        .call(() => {
+          if (typingCode) typingCode.textContent = 'alert.received("production")\ninspect.logs(); fix(); push();';
+        }, null, "feedback+=1.62")
+        .to(typingConsole, { boxShadow: "0 0 0 1px rgba(255,146,40,.45), 0 0 34px rgba(255,139,31,.35), 0 18px 36px rgba(0,0,0,.33)", duration: 0.34 }, "feedback+=1.55")
+        .to(typingConsole, { boxShadow: "inset 0 1px 0 rgba(255,255,255,.08), 0 0 26px rgba(33,128,255,.25), 0 18px 36px rgba(0,0,0,.33)", duration: 0.55 }, "feedback+=1.9")
+        .to(incidentNotification, { autoAlpha: 0, scale: 0.55, duration: 0.24 }, "feedback+=1.9")
+        .to(feedbackPath, { opacity: 0.52, duration: 0.45 }, "feedback+=1.88")
         .to([gitCluster, pipelineIcons, awsOrb, cloudwatchOrb, alertsCluster], {
           scale: 0.96,
           autoAlpha: 0.74,
           duration: 0.75,
           ease: "power2.out"
-        }, ">+=0.5")
+        }, ">+=0.48")
         .to([developerOrb, typingConsole], { autoAlpha: 0.72, duration: 0.45 }, "<")
         .set(stageIcons, { opacity: 0.52, scale: 0.82, filter: "saturate(.6) brightness(.72)" })
-        .set(deploymentPath, { opacity: 0.95 });
+        .set(deploymentPaths, { opacity: 0 });
 
       if (ScrollTriggerApi) {
         ScrollTriggerApi.create({
@@ -913,31 +1330,36 @@
       stars.rotation.y -= 0.00008;
 
       // Region deployment packets remain dormant until GSAP reaches AWS.
+      // Layer controls can isolate deployment without changing the globe itself.
+      const deploymentLayerVisibility = overlayState.activeLayer === "all" || overlayState.activeLayer === "deployment" ? 1 : 0.09;
       regionCurves.forEach((item, index) => {
-        const progress = (elapsed * 0.055 + item.offset) % 1;
+        const progress = clamp(item.state.progress, 0, 1);
         item.packet.position.copy(item.curve.getPointAt(progress));
-        const pulse = 0.56 + Math.sin(elapsed * 4 + index) * 0.22;
-        item.packet.material.opacity = overlayState.deploymentIntensity * pulse;
-        item.line.material.opacity = 0.08 + overlayState.deploymentIntensity * 0.38;
+        const pulse = 0.72 + Math.sin(elapsed * 7 + index) * 0.18;
+        item.packet.material.opacity = item.state.intensity * pulse * deploymentLayerVisibility;
+        item.line.material.opacity = item.state.intensity * 0.58 * deploymentLayerVisibility;
       });
 
       const sharedPulse = 0.5 + 0.5 * Math.sin(elapsed * 2.8);
       regionObjects.forEach((item) => {
         const pulse = 0.55 + 0.45 * Math.sin(elapsed * 2.8 + item.phase) * sharedPulse;
-        const deployBoost = overlayState.deploymentIntensity;
-        item.pin.scale.setScalar(0.075 + pulse * 0.035 + deployBoost * 0.055);
-        item.pin.material.opacity = 0.34 + pulse * 0.18 + deployBoost * 0.45;
+        const baseSize = item.region.featured ? 0.078 : 0.058;
+        const baseOpacity = item.region.featured ? 0.34 : 0.20;
+        const deployBoost = item.waveBoost + overlayState.deploymentIntensity * (item.region.featured ? 0.08 : 0.03);
+        item.pin.scale.setScalar(baseSize + pulse * 0.025 + deployBoost * 0.055);
+        item.pin.material.opacity = (baseOpacity + pulse * 0.14 + deployBoost * 0.46) * deploymentLayerVisibility;
         item.azPins.forEach((azPin, azIndex) => {
           const azPulse = 0.5 + 0.5 * Math.sin(elapsed * 5.2 + item.phase + azIndex * 0.7);
-          azPin.scale.setScalar(0.033 + azPulse * 0.018 + deployBoost * 0.025);
-          azPin.material.opacity = 0.13 + azPulse * 0.13 + deployBoost * 0.52;
+          const azBase = item.region.featured ? 0.026 : 0.020;
+          azPin.scale.setScalar(azBase + azPulse * 0.012 + deployBoost * 0.024);
+          azPin.material.opacity = ((item.region.featured ? 0.10 : 0.05) + azPulse * 0.09 + deployBoost * 0.48) * deploymentLayerVisibility;
         });
       });
 
       pulsePins.forEach((pin) => {
         const pulse = 0.5 + 0.5 * Math.sin(elapsed * 2.8 + pin.userData.phase);
-        pin.scale.setScalar(0.05 + pulse * 0.045);
-        pin.material.opacity = 0.2 + pulse * 0.48;
+        pin.scale.setScalar(0.045 + pulse * 0.030);
+        pin.material.opacity = 0.06 + pulse * 0.16;
       });
 
       nodes.forEach((anchor, key) => {
@@ -956,6 +1378,7 @@
     renderer.render(scene, camera);
     stage.classList.add("scene-ready");
     updateOverlayPaths();
+    initLayerControls();
     initGsapFlow();
     if (ScrollTriggerApi) ScrollTriggerApi.refresh();
     if (fallbackTimer) window.clearTimeout(fallbackTimer);

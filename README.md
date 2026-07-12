@@ -8,7 +8,7 @@ This package preserves the existing Three.js crystal globe, drag rotation, zoom,
 - Git is represented by Bitbucket, GitHub, and GitLab brand icons.
 - CI/CD stages use Snyk, Jenkins, Playwright, and AWS icons.
 - AWS Multi-AZ text cards were removed.
-- AWS regions now use glowing region pins with three smaller Availability Zone lights.
+- AWS regions use geographic glowing pins; US-EAST-1, EU-WEST-1, and AP-SOUTH-1 keep compact labels while other details appear on hover or click.
 - CloudWatch is represented by a metrics icon.
 - Alerts use Slack, phone, and email icons.
 - DOM/SVG icons are projected onto Three.js anchor points, so they follow globe rotation while remaining sharp.
@@ -19,7 +19,7 @@ This package preserves the existing Three.js crystal globe, drag rotation, zoom,
 2. The terminal types a release workflow.
 3. An application-version package travels from Developer → Git → Security → Build → Test → Deploy → AWS.
 4. Pipeline icons illuminate with a `stagger: 0.15` sequence.
-5. On AWS receipt, the orange deployment path draws toward an AWS region and Multi-AZ lights pulse.
+5. On AWS receipt, a deployment wave runs AWS → US-EAST-1 → EU-WEST-1 → AP-SOUTH-1 while regional Multi-AZ lights pulse.
 6. A telemetry pulse travels AWS → CloudWatch → Alerts.
 7. ScrollTrigger pauses the repeating sequence while the globe is outside the viewport.
 
