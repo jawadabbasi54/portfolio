@@ -15,8 +15,16 @@
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="canonical" href="https://jawadabbasi.com" />
   <link rel="icon" href="/assets/favicon.svg?v=20260711-3" type="image/svg+xml" />
-  <link rel="preload" as="image" href="/assets/prototype-fallback.png?v=20260711-3" />
-    <link rel="stylesheet" href="/styles.css?v=20260712-cinematic1" />
+  <link rel="preload" href="/vendor/three.min.js?v=20260712-regions1" as="script" />
+  <link rel="preload" href="/script.js?v=20260712-regionembed2" as="script" />
+  <link rel="preload" as="image" type="image/png" href="/assets/textures/earth_surface_4096.png?v=20260712-sharp1" fetchpriority="high" />
+  <link rel="preload" as="image" type="image/png" href="/assets/textures/earth_lights_points_4096.png?v=20260712-sharp1" fetchpriority="high" />
+  <link rel="preload" as="image" type="image/png" href="/assets/textures/earth_lights_4096.png?v=20260712-sharp1" />
+  <link rel="preload" as="image" type="image/png" href="/assets/textures/earth_normal_2048.png?v=20260712-sharp1" />
+  <link rel="preload" as="image" type="image/png" href="/assets/textures/earth_specular_2048.png?v=20260712-sharp1" />
+  <link rel="preload" as="image" type="image/png" href="/assets/textures/earth_roughness_2048.png?v=20260712-sharp1" />
+  <link rel="preload" as="image" type="image/png" href="/assets/textures/aws_region_embedded_4096.png?v=20260712-regionembed1" />
+  <link rel="stylesheet" href="/styles.css?v=20260712-cinematic1" />
   <title>Jawad Abbasi | Senior DevOps Engineer</title>
   <noscript><style>.reveal{opacity:1!important;transform:none!important}.scene-loader{display:none!important}</style></noscript>
 </head>
@@ -71,7 +79,6 @@
 
       <div class="visual-column reveal">
         <div class="globe-stage" id="globe-stage" aria-label="Interactive rotatable DevOps lifecycle globe">
-          <img class="prototype-fallback" src="/assets/prototype-fallback.png?v=20260711-3" alt="" aria-hidden="true" />
           <canvas id="globe-canvas" aria-hidden="true"></canvas>
           <div class="glass-reflection" aria-hidden="true"></div>
           <div class="scene-loader" id="scene-loader" aria-live="polite">
@@ -278,6 +285,6 @@
   <script src="/vendor/gsap.min.js?v=20260712-regions1" defer></script>
   <script src="/vendor/ScrollTrigger.min.js?v=20260712-regions1" defer></script>
   <script src="/vendor/three.min.js?v=20260712-regions1" defer></script>
-  <script src="/script.js?v=20260712-sharp-audit1" defer></script>
+  <script src="/script.js?v=20260712-regionembed2" defer></script>
 </body>
 </html>

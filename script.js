@@ -827,13 +827,14 @@
     // Anisotropy is inexpensive for this single sphere and materially improves
     // texture detail toward the limb, so use the renderer's supported maximum.
     const anisotropy = Math.max(1, renderer.capabilities.getMaxAnisotropy());
-    const [surfaceMap, lightsMap, lightMaskMap, normalMap, specularMap, roughnessMap] = await Promise.all([
+    const [surfaceMap, lightsMap, lightMaskMap, normalMap, specularMap, roughnessMap, regionGlowMap] = await Promise.all([
       loadTexture("/assets/textures/earth_surface_4096.png?v=20260712-sharp1", anisotropy),
       loadTexture("/assets/textures/earth_lights_points_4096.png?v=20260712-sharp1", anisotropy),
       loadTexture("/assets/textures/earth_lights_4096.png?v=20260712-sharp1", anisotropy),
       loadTexture("/assets/textures/earth_normal_2048.png?v=20260712-sharp1", anisotropy),
       loadTexture("/assets/textures/earth_specular_2048.png?v=20260712-sharp1", anisotropy),
-      loadTexture("/assets/textures/earth_roughness_2048.png?v=20260712-sharp1", anisotropy)
+      loadTexture("/assets/textures/earth_roughness_2048.png?v=20260712-sharp1", anisotropy),
+      loadTexture("/assets/textures/aws_region_embedded_4096.png?v=20260712-regionembed1", anisotropy)
     ]);
 
     const coreUniforms = {
@@ -844,12 +845,14 @@
       uNormalMap: { value: normalMap || new T.Texture() },
       uSpecularMap: { value: specularMap || new T.Texture() },
       uRoughnessMap: { value: roughnessMap || new T.Texture() },
+      uRegionGlowMap: { value: regionGlowMap || new T.Texture() },
       uHasSurfaceMap: { value: surfaceMap ? 1 : 0 },
       uHasLightsMap: { value: lightsMap ? 1 : 0 },
       uHasLightMaskMap: { value: lightMaskMap ? 1 : 0 },
       uHasNormalMap: { value: normalMap ? 1 : 0 },
       uHasSpecularMap: { value: specularMap ? 1 : 0 },
-      uHasRoughnessMap: { value: roughnessMap ? 1 : 0 }
+      uHasRoughnessMap: { value: roughnessMap ? 1 : 0 },
+      uHasRegionGlowMap: { value: regionGlowMap ? 1 : 0 }
     };
 
     const coreMaterial = new T.ShaderMaterial({
@@ -879,12 +882,14 @@
         uniform sampler2D uNormalMap;
         uniform sampler2D uSpecularMap;
         uniform sampler2D uRoughnessMap;
+        uniform sampler2D uRegionGlowMap;
         uniform float uHasSurfaceMap;
         uniform float uHasLightsMap;
         uniform float uHasLightMaskMap;
         uniform float uHasNormalMap;
         uniform float uHasSpecularMap;
         uniform float uHasRoughnessMap;
+        uniform float uHasRegionGlowMap;
         varying vec2 vUv;
         varying vec3 vNormalV;
         varying vec3 vViewDir;
@@ -952,6 +957,13 @@
           if (uHasLightMaskMap > 0.5) {
             lightMask = srgbToLinear(texture2D(uLightMaskMap, vUv, -0.15).rgb);
           }
+          vec3 regionGlow = vec3(0.0);
+          if (uHasRegionGlowMap > 0.5) {
+            // Embedded AWS-region illumination shares the same UV space as the
+            // night map so the highlighted regions appear inside the Earth.
+            regionGlow = srgbToLinear(texture2D(uRegionGlowMap, vUv, -0.95).rgb);
+          }
+          float regionGlowLuma = max(regionGlow.r, max(regionGlow.g, regionGlow.b));
           float cityLuma = max(city.r, max(city.g, city.b));
           float cityPoint = smoothstep(0.0025, 0.16, cityLuma);
           float cityCore = smoothstep(0.055, 0.62, cityLuma);
@@ -984,7 +996,10 @@
           // It deliberately stays out of the bloom layer so the points remain crisp.
           vec3 cityColor = city * (3.4 + cityPoint * 3.2 + cityCore * 4.6) * cityTwinkle;
           cityColor = contrast(cityColor, 1.34, 0.012);
+          vec3 regionColor = regionGlow * (2.4 + regionGlowLuma * 4.6);
+          regionColor = contrast(regionColor, 1.14, 0.010);
           color += cityColor;
+          color += regionColor;
           color += vec3(0.055, 0.42, 0.98) * scan * 0.010;
           color += vec3(0.006, 0.027, 0.082) * (1.0 - baseLuma) * 0.10;
 
@@ -1369,43 +1384,94 @@
     const regionCurves = [];
     const awsPosition = nodes.get("aws").position.clone();
 
+    // Surface-attached AWS markers stay anchored to the globe itself while the
+    // existing floating region labels and deployment connections remain intact.
+    const regionSurfaceCoreGeometry = new T.CircleGeometry(0.013, 18);
+    const regionSurfaceHaloGeometry = new T.RingGeometry(0.016, 0.026, 32);
+    const regionSurfaceNormalAxis = new T.Vector3(0, 0, 1);
+
     regions.forEach((region, index) => {
       const position = latLonToVector(region.lat, region.lon, 2.10);
       const regionAnchor = new T.Object3D();
       regionAnchor.position.copy(position);
       world.add(regionAnchor);
 
+      const surfacePosition = latLonToVector(region.lat, region.lon, 2.0218);
+      const surfaceAnchor = new T.Object3D();
+      surfaceAnchor.position.copy(surfacePosition);
+      surfaceAnchor.quaternion.setFromUnitVectors(
+        regionSurfaceNormalAxis,
+        surfacePosition.clone().normalize()
+      );
+      world.add(surfaceAnchor);
+
+      const surfaceCore = new T.Mesh(
+        regionSurfaceCoreGeometry,
+        new T.MeshBasicMaterial({
+          color: region.featured ? 0xffd279 : 0xffbb63,
+          transparent: true,
+          opacity: region.featured ? 0.44 : 0.30,
+          depthWrite: false,
+          depthTest: true,
+          blending: T.AdditiveBlending,
+          toneMapped: false,
+          side: T.DoubleSide
+        })
+      );
+      surfaceCore.position.z = 0.0014;
+      surfaceCore.renderOrder = 6;
+      enableSelectiveBloom(surfaceCore);
+      surfaceAnchor.add(surfaceCore);
+
+      const surfaceHalo = new T.Mesh(
+        regionSurfaceHaloGeometry,
+        new T.MeshBasicMaterial({
+          color: region.featured ? 0xffb45a : 0xff9f43,
+          transparent: true,
+          opacity: region.featured ? 0.16 : 0.10,
+          side: T.DoubleSide,
+          depthWrite: false,
+          depthTest: true,
+          blending: T.AdditiveBlending,
+          toneMapped: false
+        })
+      );
+      surfaceHalo.position.z = 0.0011;
+      surfaceHalo.renderOrder = 6;
+      enableSelectiveBloom(surfaceHalo);
+      surfaceAnchor.add(surfaceHalo);
+
       const pin = new T.Sprite(new T.SpriteMaterial({
         map: glowOrange,
-        color: region.featured ? 0xffb15b : 0xffa34a,
+        color: region.featured ? 0xffca75 : 0xffb765,
         transparent: true,
-        opacity: region.featured ? 0.62 : 0.40,
+        opacity: region.featured ? 0.18 : 0.12,
         depthWrite: false,
         depthTest: true,
         blending: T.AdditiveBlending
       }));
-      pin.scale.setScalar(region.featured ? 0.105 : 0.075);
+      pin.position.z = 0.0032;
+      pin.scale.setScalar(region.featured ? 0.036 : 0.028);
       pin.renderOrder = 7;
       enableSelectiveBloom(pin);
-      regionAnchor.add(pin);
+      surfaceAnchor.add(pin);
 
-      // Three compact AZ lights appear on the globe; the readable AZ names live
-      // in the hover/click card rather than permanently occupying the scene.
+      // Preserve array structure for the existing deployment state while keeping
+      // AZ helper sprites visually dormant on the globe surface.
       const azPins = [-1, 0, 1].map((offsetIndex) => {
         const azPin = new T.Sprite(new T.SpriteMaterial({
           map: glowOrange,
           color: 0xffc06b,
           transparent: true,
-          opacity: region.featured ? 0.24 : 0.11,
+          opacity: 0.0,
           depthWrite: false,
           depthTest: true,
           blending: T.AdditiveBlending
         }));
-        azPin.position.set(offsetIndex * 0.078, -0.07, 0.032 * Math.abs(offsetIndex));
-        azPin.scale.setScalar(region.featured ? 0.042 : 0.031);
+        azPin.position.set(offsetIndex * 0.018, -0.014, 0.001);
+        azPin.scale.setScalar(0.001);
         azPin.renderOrder = 8;
-        enableSelectiveBloom(azPin);
-        regionAnchor.add(azPin);
+        surfaceAnchor.add(azPin);
         return azPin;
       });
 
@@ -1414,6 +1480,9 @@
         index,
         anchor: regionAnchor,
         position,
+        surfaceAnchor,
+        surfaceCore,
+        surfaceHalo,
         pin,
         azPins,
         marker: null,
@@ -2361,16 +2430,22 @@
       regionBeamUniforms.uDeployment.value = overlayState.deploymentIntensity;
       regionObjects.forEach((item) => {
         const pulse = 0.55 + 0.45 * Math.sin(elapsed * 2.8 + item.phase) * sharedPulse;
-        const baseSize = item.region.featured ? 0.078 : 0.058;
-        const baseOpacity = item.region.featured ? 0.34 : 0.20;
+        const baseSize = item.region.featured ? 0.034 : 0.028;
+        const baseOpacity = item.region.featured ? 0.16 : 0.11;
         const deployBoost = item.waveBoost + overlayState.deploymentIntensity * (item.region.featured ? 0.08 : 0.03);
-        item.pin.scale.setScalar(baseSize + pulse * 0.025 + deployBoost * 0.055);
-        item.pin.material.opacity = (baseOpacity + pulse * 0.14 + deployBoost * 0.46) * deploymentLayerVisibility;
+        item.pin.scale.setScalar(baseSize + pulse * 0.008 + deployBoost * 0.014);
+        item.pin.material.opacity = (baseOpacity + pulse * 0.05 + deployBoost * 0.10) * deploymentLayerVisibility;
+
+        const surfacePulse = 0.5 + 0.5 * Math.sin(elapsed * 2.15 + item.phase);
+        item.surfaceCore.scale.setScalar(0.96 + surfacePulse * 0.10 + deployBoost * 0.04);
+        item.surfaceCore.material.opacity = ((item.region.featured ? 0.44 : 0.30) + surfacePulse * 0.06 + deployBoost * 0.08) * deploymentLayerVisibility;
+        item.surfaceHalo.scale.setScalar(0.94 + surfacePulse * 0.18 + deployBoost * 0.08);
+        item.surfaceHalo.material.opacity = ((item.region.featured ? 0.16 : 0.10) + surfacePulse * 0.05 + deployBoost * 0.06) * deploymentLayerVisibility;
         item.azPins.forEach((azPin, azIndex) => {
           const azPulse = 0.5 + 0.5 * Math.sin(elapsed * 5.2 + item.phase + azIndex * 0.7);
-          const azBase = item.region.featured ? 0.026 : 0.020;
-          azPin.scale.setScalar(azBase + azPulse * 0.012 + deployBoost * 0.024);
-          azPin.material.opacity = ((item.region.featured ? 0.10 : 0.05) + azPulse * 0.09 + deployBoost * 0.48) * deploymentLayerVisibility;
+          const azBase = 0.001;
+          azPin.scale.setScalar(azBase);
+          azPin.material.opacity = 0.0;
         });
       });
 
