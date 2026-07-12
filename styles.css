@@ -1608,3 +1608,87 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .spider-web-background { opacity: .34; }
 }
+
+/* --------------------------------------------------------------------------
+   Cinematic globe polish — motion and depth only, no layout redesign
+   -------------------------------------------------------------------------- */
+#globe-stage .flow-path-code,
+#globe-stage .flow-path-monitor {
+  stroke-dasharray: none;
+  stroke-linecap: round;
+}
+#globe-stage .flow-path-code {
+  stroke-width: 2.5;
+  opacity: .48;
+}
+#globe-stage .flow-path-monitor {
+  stroke-width: 2.05;
+  opacity: .34;
+}
+
+#globe-stage .node-orb,
+#globe-stage .brand-orb-icon,
+#globe-stage .pipeline-stage,
+#globe-stage .typing-console,
+#globe-stage .node-caption,
+#globe-stage .region-compact-label,
+#globe-stage .region-detail-card {
+  isolation: isolate;
+}
+
+#globe-stage .node-orb::after,
+#globe-stage .brand-orb-icon::after,
+#globe-stage .pipeline-stage::after,
+#globe-stage .typing-console::after,
+#globe-stage .node-caption::after,
+#globe-stage .region-compact-label::after,
+#globe-stage .region-detail-card::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(112deg, transparent 15%, rgba(255,255,255,.12) 39%, transparent 58%) -180% 0 / 220% 100% no-repeat,
+    linear-gradient(90deg, rgba(72,157,255,.18), transparent 36%, rgba(57,231,255,.12) 65%, rgba(255,151,42,.14));
+  mix-blend-mode: screen;
+  opacity: .38;
+  animation: globe-glass-reflection 7.8s cubic-bezier(.45,0,.55,1) infinite;
+}
+
+#globe-stage .node-orb > *,
+#globe-stage .brand-orb-icon > *,
+#globe-stage .pipeline-stage > *,
+#globe-stage .typing-console > *,
+#globe-stage .node-caption > *,
+#globe-stage .region-compact-label > *,
+#globe-stage .region-detail-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+#globe-stage .pipeline-stage.is-active::after,
+#globe-stage .node-orb-aws::after,
+#globe-stage .region-marker.is-deployment-active .region-compact-label::after {
+  opacity: .72;
+  animation-duration: 3.4s;
+}
+
+@keyframes globe-glass-reflection {
+  0%, 18% { background-position: -180% 0, 0 0; }
+  52%, 100% { background-position: 180% 0, 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #globe-stage .node-orb::after,
+  #globe-stage .brand-orb-icon::after,
+  #globe-stage .pipeline-stage::after,
+  #globe-stage .typing-console::after,
+  #globe-stage .node-caption::after,
+  #globe-stage .region-compact-label::after,
+  #globe-stage .region-detail-card::after {
+    animation: none;
+    background-position: 45% 0, 0 0;
+  }
+}
