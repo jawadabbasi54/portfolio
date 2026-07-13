@@ -1,0 +1,88 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+}
+
+const {
+  title,
+  description,
+  canonical = "https://jawadabbasi.com",
+} = Astro.props;
+
+const socialImage = new URL("/assets/og-cover.png", canonical).toString();
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Jawad Abbasi",
+  url: canonical,
+  image: socialImage,
+  jobTitle: "Senior DevOps Engineer",
+  email: "mailto:jawadabbasi54@gmail.com",
+  telephone: "+92 332 5501123",
+  sameAs: ["https://linkedin.com/in/jawad-abbasi-573772117"],
+  knowsAbout: [
+    "Amazon Web Services",
+    "DevOps",
+    "DevSecOps",
+    "Terraform",
+    "CI/CD",
+    "Cloud infrastructure",
+    "Cloud observability",
+    "AWS IoT",
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#030817" />
+    <meta name="description" content={description} />
+    <meta name="keywords" content="Jawad Abbasi, DevOps Engineer, AWS, Terraform, CI/CD, CloudWatch, Bitbucket, Docker, Jenkins, DevSecOps" />
+    <meta name="author" content="Jawad Abbasi" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:alt" content="Jawad Abbasi — Senior DevOps Engineer portfolio" />
+    <meta property="og:site_name" content="Jawad Abbasi" />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <meta name="twitter:image:alt" content="Jawad Abbasi — Senior DevOps Engineer portfolio" />
+
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/assets/favicon.svg?v=20260711-3" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="preload" href="/vendor/three.min.js?v=20260712-regions1" as="script" />
+    <link rel="preload" href="/script.js?v=20260712-regionembed2" as="script" />
+    <link rel="preload" as="image" type="image/png" href="/assets/textures/earth_surface_4096.png?v=20260712-sharp1" fetchpriority="high" />
+    <link rel="preload" as="image" type="image/png" href="/assets/textures/earth_lights_points_4096.png?v=20260712-sharp1" fetchpriority="high" />
+
+    <title>{title}</title>
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    <noscript><style>.reveal{opacity:1!important;transform:none!important}.scene-loader{display:none!important}</style></noscript>
+  </head>
+  <body>
+    <slot />
+
+    <!-- Keep these deferred scripts in dependency order; the globe expects their browser globals. -->
+    <script is:inline src="/spider-web.js?v=20260712-web2-optimized" defer></script>
+    <script is:inline src="/vendor/gsap.min.js?v=20260712-regions1" defer></script>
+    <script is:inline src="/vendor/ScrollTrigger.min.js?v=20260712-regions1" defer></script>
+    <script is:inline src="/vendor/three.min.js?v=20260712-regions1" defer></script>
+    <script is:inline src="/script.js?v=20260712-regionembed2" defer></script>
+  </body>
+</html>

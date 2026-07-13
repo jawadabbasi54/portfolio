@@ -1,34 +1,11 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#030817" />
-  <meta name="description" content="Jawad Abbasi — Senior DevOps Engineer specializing in AWS, Terraform, CI/CD, DevSecOps, observability, and enterprise IoT platforms." />
-  <meta name="keywords" content="Jawad Abbasi, DevOps Engineer, AWS, Terraform, CI/CD, CloudWatch, Bitbucket, Docker, Jenkins, DevSecOps" />
-  <meta name="author" content="Jawad Abbasi" />
-  <meta property="og:title" content="Jawad Abbasi — Senior DevOps Engineer" />
-  <meta property="og:description" content="End-to-end DevOps, cloud automation, security, observability, and reliable delivery on AWS." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://jawadabbasi.com" />
-  <meta property="og:image" content="https://jawadabbasi.com/assets/og-cover.png" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <link rel="canonical" href="https://jawadabbasi.com" />
-  <link rel="icon" href="/assets/favicon.svg?v=20260711-3" type="image/svg+xml" />
-  <link rel="preload" href="/vendor/three.min.js?v=20260712-regions1" as="script" />
-  <link rel="preload" href="/script.js?v=20260712-regionembed2" as="script" />
-  <link rel="preload" as="image" type="image/png" href="/assets/textures/earth_surface_4096.png?v=20260712-sharp1" fetchpriority="high" />
-  <link rel="preload" as="image" type="image/png" href="/assets/textures/earth_lights_points_4096.png?v=20260712-sharp1" fetchpriority="high" />
-  <link rel="preload" as="image" type="image/png" href="/assets/textures/earth_lights_4096.png?v=20260712-sharp1" />
-  <link rel="preload" as="image" type="image/png" href="/assets/textures/earth_normal_2048.png?v=20260712-sharp1" />
-  <link rel="preload" as="image" type="image/png" href="/assets/textures/earth_specular_2048.png?v=20260712-sharp1" />
-  <link rel="preload" as="image" type="image/png" href="/assets/textures/earth_roughness_2048.png?v=20260712-sharp1" />
-  <link rel="preload" as="image" type="image/png" href="/assets/textures/aws_region_embedded_4096.png?v=20260712-regionembed1" />
-  <link rel="stylesheet" href="/styles.css?v=20260712-cinematic1" />
-  <title>Jawad Abbasi | Senior DevOps Engineer</title>
-  <noscript><style>.reveal{opacity:1!important;transform:none!important}.scene-loader{display:none!important}</style></noscript>
-</head>
-<body>
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const title = "Jawad Abbasi | Senior DevOps Engineer";
+const description = "Jawad Abbasi — Senior DevOps Engineer specializing in AWS, Terraform, CI/CD, DevSecOps, observability, and enterprise IoT platforms.";
+---
+
+<BaseLayout title={title} description={description}>
   <canvas class="spider-web-background" id="spider-web-background" aria-hidden="true"></canvas>
   <div class="page-noise" aria-hidden="true"></div>
   <div class="ambient ambient-one" aria-hidden="true"></div>
@@ -281,10 +258,4 @@
   </main>
 
   <footer class="site-footer section-shell"><span>© <span id="year"></span> Jawad Abbasi</span><a href="#top">Back to top ↑</a></footer>
-  <script src="/spider-web.js?v=20260712-web2-optimized" defer></script>
-  <script src="/vendor/gsap.min.js?v=20260712-regions1" defer></script>
-  <script src="/vendor/ScrollTrigger.min.js?v=20260712-regions1" defer></script>
-  <script src="/vendor/three.min.js?v=20260712-regions1" defer></script>
-  <script src="/script.js?v=20260712-regionembed2" defer></script>
-</body>
-</html>
+</BaseLayout>

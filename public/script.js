@@ -216,7 +216,6 @@
   const codePath = qs("#code-path");
   const monitorPath = qs("#monitor-path");
   const deploymentPaths = qsa(".deployment-wave-path", uiLayer || document);
-  const deploymentPath = deploymentPaths[0] || null;
   const feedbackPath = qs("#feedback-path");
   const applicationVersion = qs("#application-version");
   const deploymentWavePulse = qs("#deployment-wave-pulse");
@@ -277,27 +276,6 @@
       radius * Math.sin(phi),
       radius * Math.cos(phi) * Math.cos(theta)
     );
-  }
-
-  function roundedRect(ctx, x, y, width, height, radius) {
-    const r = Math.min(radius, width / 2, height / 2);
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.arcTo(x + width, y, x + width, y + height, r);
-    ctx.arcTo(x + width, y + height, x, y + height, r);
-    ctx.arcTo(x, y + height, x, y, r);
-    ctx.arcTo(x, y, x + width, y, r);
-    ctx.closePath();
-  }
-
-  function text(ctx, value, x, y, size, color, align = "left", weight = 700, family = "Inter, Arial, sans-serif") {
-    ctx.save();
-    ctx.textAlign = align;
-    ctx.textBaseline = "middle";
-    ctx.font = `${weight} ${size}px ${family}`;
-    ctx.fillStyle = color;
-    ctx.fillText(value, x, y);
-    ctx.restore();
   }
 
   function glowDotTexture(color = "#43b8ff", size = 256) {
@@ -617,7 +595,7 @@
 
       return {
         enabled: true,
-        setSize(width, height) {
+        setSize() {
           const drawing = new T.Vector2();
           renderer.getDrawingBufferSize(drawing);
           const fullWidth = Math.max(2, Math.floor(drawing.x));
@@ -2441,8 +2419,7 @@
         item.surfaceCore.material.opacity = ((item.region.featured ? 0.44 : 0.30) + surfacePulse * 0.06 + deployBoost * 0.08) * deploymentLayerVisibility;
         item.surfaceHalo.scale.setScalar(0.94 + surfacePulse * 0.18 + deployBoost * 0.08);
         item.surfaceHalo.material.opacity = ((item.region.featured ? 0.16 : 0.10) + surfacePulse * 0.05 + deployBoost * 0.06) * deploymentLayerVisibility;
-        item.azPins.forEach((azPin, azIndex) => {
-          const azPulse = 0.5 + 0.5 * Math.sin(elapsed * 5.2 + item.phase + azIndex * 0.7);
+        item.azPins.forEach((azPin) => {
           const azBase = 0.001;
           azPin.scale.setScalar(azBase);
           azPin.material.opacity = 0.0;
