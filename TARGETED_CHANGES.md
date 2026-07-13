@@ -13,3 +13,7 @@ All other page sections, globe materials, drag/zoom behavior, navigation, conten
 - `src/pages/index.astro` contains the lifecycle nodes, flow paths, captions, tooltips, and layer controls.
 - `public/script.js` contains lifecycle animation, path updates, deployment intensity, and interaction logic.
 - `src/styles/global.css` contains the responsive node, tooltip, path, and control styling.
+
+## Rotation-safe path anchoring
+
+The screen-space lifecycle paths are clipped to a perspective-correct outline of the visible globe surface. `public/script.js` recomputes that outline from the active camera and sphere tangent, preventing Bézier curves from extending beyond the left or right Earth limb during rotation, zoom, camera drift, or responsive resizing.

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-07-14 — Rotation-safe globe flow anchoring
+
+- Added a perspective-correct SVG clip derived from the camera-to-globe tangent boundary.
+- Kept code, deployment, monitoring, and feedback routes inside the visible Earth silhouette at every rotation angle.
+- Made the clip update with camera drift, zoom, and responsive stage resizing.
+- Preserved the existing Three.js globe, node positions, GSAP lifecycle timing, controls, and visual design.
+
 ## 2026-07-13 — Production SEO and delivery hardening
 
 - Expanded JSON-LD from a standalone Person into linked ProfilePage, WebSite, and Person entities.

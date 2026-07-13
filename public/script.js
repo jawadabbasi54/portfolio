@@ -217,6 +217,7 @@
   const monitorPath = qs("#monitor-path");
   const deploymentPaths = qsa(".deployment-wave-path", uiLayer || document);
   const feedbackPath = qs("#feedback-path");
+  const globeSurfaceClipPath = qs("#globe-surface-clip-path");
   const applicationVersion = qs("#application-version");
   const deploymentWavePulse = qs("#deployment-wave-pulse");
   const telemetryPulse = qs("#telemetry-pulse");
@@ -1774,6 +1775,61 @@
       return { x, y, facing, depthScale, z: projected.z };
     }
 
+    /**
+     * Keep screen-space lifecycle routes inside the globe's visible silhouette.
+     *
+     * The DOM nodes use rotating 3D anchors, but their SVG Bézier controls live
+     * in screen space and can otherwise bow beyond the Earth at the left/right
+     * limbs. Sampling the camera-to-sphere tangent circle gives the exact
+     * perspective outline for the current zoom and camera drift. The clip is
+     * updated with the projected nodes, so rotation never detaches a route from
+     * the globe surface.
+     */
+    function updateGlobeSurfaceClip() {
+      if (!globeSurfaceClipPath) return;
+
+      const surfaceRadius = 2.13;
+      const stageRect = stage.getBoundingClientRect();
+      const center = new T.Vector3(0, 0, 0).applyMatrix4(world.matrixWorld);
+      const centerToCamera = camera.position.clone().sub(center);
+      const distance = centerToCamera.length();
+      if (distance <= surfaceRadius) return;
+
+      const viewNormal = centerToCamera.normalize();
+      const tangentCenter = center.clone().addScaledVector(
+        viewNormal,
+        (surfaceRadius * surfaceRadius) / distance
+      );
+      const tangentRadius = surfaceRadius * Math.sqrt(
+        1 - (surfaceRadius * surfaceRadius) / (distance * distance)
+      );
+
+      // Start with the camera's right vector, then make it perpendicular to the
+      // center-to-camera direction. This remains stable during cinematic drift.
+      const tangentRight = new T.Vector3().setFromMatrixColumn(camera.matrixWorld, 0);
+      tangentRight.addScaledVector(viewNormal, -tangentRight.dot(viewNormal)).normalize();
+      const tangentUp = viewNormal.clone().cross(tangentRight).normalize();
+      const outline = [];
+      const samples = 64;
+
+      for (let index = 0; index < samples; index += 1) {
+        const angle = (index / samples) * Math.PI * 2;
+        const worldPoint = tangentCenter.clone()
+          .addScaledVector(tangentRight, Math.cos(angle) * tangentRadius)
+          .addScaledVector(tangentUp, Math.sin(angle) * tangentRadius);
+        const projected = worldPoint.project(camera);
+        outline.push({
+          x: (projected.x * 0.5 + 0.5) * stageRect.width,
+          y: (-projected.y * 0.5 + 0.5) * stageRect.height
+        });
+      }
+
+      const d = outline.map((point, index) =>
+        `${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`
+      ).join(" ");
+      globeSurfaceClipPath.setAttribute("d", `${d} Z`);
+    }
+
     function setProjectedNode(key) {
       const anchor = nodes.get(key);
       const element = domNodes.get(key);
@@ -1843,6 +1899,7 @@
 
     function updateOverlayPaths() {
       if (!uiLayer || !codePath || !monitorPath || !deploymentPaths.length || !feedbackPath) return;
+      updateGlobeSurfaceClip();
       nodeConfigs.forEach(({ key }) => setProjectedNode(key));
       updateRegionMarkers();
 

@@ -103,13 +103,18 @@ const description = "Jawad Abbasi — Senior DevOps Engineer specializing in AWS
                   <feGaussianBlur stdDeviation="1.8" result="blur" />
                   <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
                 </filter>
+                <clipPath id="globe-surface-clip" clipPathUnits="userSpaceOnUse">
+                  <path id="globe-surface-clip-path" d="" />
+                </clipPath>
               </defs>
-              <path id="code-path" class="flow-path flow-path-code" data-layers="code" marker-end="url(#arrow-code)" d="" />
-              <path id="monitor-path" class="flow-path flow-path-monitor" data-layers="monitoring" marker-end="url(#arrow-monitor)" d="" />
-              <path id="deployment-path" class="flow-path flow-path-deployment deployment-wave-path" data-layers="deployment" data-wave-index="0" marker-end="url(#arrow-deploy)" d="" />
-              <path id="deployment-path-2" class="flow-path flow-path-deployment deployment-wave-path" data-layers="deployment" data-wave-index="1" marker-end="url(#arrow-deploy)" d="" />
-              <path id="deployment-path-3" class="flow-path flow-path-deployment deployment-wave-path" data-layers="deployment" data-wave-index="2" marker-end="url(#arrow-deploy)" d="" />
-              <path id="feedback-path" class="flow-path flow-path-feedback" data-layers="monitoring" marker-end="url(#arrow-feedback)" d="" />
+              <g clip-path="url(#globe-surface-clip)">
+                <path id="code-path" class="flow-path flow-path-code" data-layers="code" marker-end="url(#arrow-code)" d="" />
+                <path id="monitor-path" class="flow-path flow-path-monitor" data-layers="monitoring" marker-end="url(#arrow-monitor)" d="" />
+                <path id="deployment-path" class="flow-path flow-path-deployment deployment-wave-path" data-layers="deployment" data-wave-index="0" marker-end="url(#arrow-deploy)" d="" />
+                <path id="deployment-path-2" class="flow-path flow-path-deployment deployment-wave-path" data-layers="deployment" data-wave-index="1" marker-end="url(#arrow-deploy)" d="" />
+                <path id="deployment-path-3" class="flow-path flow-path-deployment deployment-wave-path" data-layers="deployment" data-wave-index="2" marker-end="url(#arrow-deploy)" d="" />
+                <path id="feedback-path" class="flow-path flow-path-feedback" data-layers="monitoring" marker-end="url(#arrow-feedback)" d="" />
+              </g>
             </svg>
 
             <div class="devops-node developer-node" data-node="developer" data-layers="code monitoring" aria-label="Developer writing, responding to alerts and pushing improvements">
