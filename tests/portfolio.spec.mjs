@@ -33,6 +33,7 @@ test("mobile defers Three.js until the globe approaches the viewport", async ({ 
   expect(await page.evaluate(() => Boolean(window.THREE))).toBe(false);
   await page.locator("#globe-stage").scrollIntoViewIfNeeded();
   await expect.poll(() => page.evaluate(() => Boolean(window.THREE)), { timeout: 15_000 }).toBe(true);
+  await expect(page.locator("#typing-console")).toBeVisible({ timeout: 20_000 });
 });
 
 for (const path of caseStudies) {

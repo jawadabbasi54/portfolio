@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-07-14 — Mobile globe CLI visibility
+
+- Restored the compact animated CLI terminal beside the Developer node on mobile viewports.
+- Added a mobile browser regression check that waits for the deferred globe runtime and verifies the terminal is visible.
+
 ## 2026-07-14 — Portfolio content, performance, and quality pass
 
 - Added four résumé-backed case-study routes with shared Astro components, article metadata, structured data, outcomes, responsibilities, and architecture narratives.

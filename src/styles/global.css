@@ -1716,8 +1716,7 @@ body {
   .case-next-actions .button { width: 100%; }
   .footer-links { gap: 14px; }
 
-  /* Prefer readable labels over crowded microcopy on the compact globe. */
-  .typing-console { display: none; }
+  /* Keep the compact CLI visible as part of the Developer lifecycle story. */
   .component-caption strong { font-size: 12px; }
   .component-caption span { display: none; }
   .component-caption { min-width: 102px; }
