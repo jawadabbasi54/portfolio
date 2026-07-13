@@ -15,3 +15,9 @@ The overlay used the projected clip-space `z` value to decide icon opacity. In a
 - Adds an immediate visible-hero startup fallback.
 - Makes the AWS SVG wordmark white while retaining its orange accent.
 - Adds cache-busted asset versions for Vercel/browser refreshes.
+
+## Current implementation files
+
+- `public/script.js` contains projection, visibility, and GSAP startup behavior.
+- `src/styles/global.css` contains overlay and icon presentation.
+- `src/layouts/BaseLayout.astro` preserves dependency-ordered deferred script loading.

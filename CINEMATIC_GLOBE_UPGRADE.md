@@ -30,6 +30,6 @@ This build upgrades the existing globe in place. The HTML layout, projected DOM 
 
 ## Files changed
 
-- `script.js`: globe shaders, motion, route materials, marker effects, camera drift, and adaptive rendering.
-- `styles.css`: existing globe UI reflection polish and solid flow-line presentation.
-- `index.html`: cache-version updates only.
+- `public/script.js`: globe shaders, motion, route materials, marker effects, camera drift, and adaptive rendering.
+- `src/styles/global.css`: existing globe UI reflection polish and solid flow-line presentation.
+- `src/layouts/BaseLayout.astro`: browser asset cache-version references.

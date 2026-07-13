@@ -16,10 +16,10 @@ This update changes only globe rendering quality and texture assets. The layout,
 
 ## Changed files
 
-- `script.js`
-- `index.html` (cache version only)
-- `assets/textures/earth_surface_4096.png`
-- `assets/textures/earth_lights_4096.png`
-- `assets/textures/earth_normal_2048.png`
-- `assets/textures/earth_specular_2048.png`
-- `assets/textures/earth_roughness_2048.png`
+- `public/script.js`
+- `src/layouts/BaseLayout.astro` (browser asset cache version only)
+- `public/assets/textures/earth_surface_4096.png`
+- `public/assets/textures/earth_lights_4096.png`
+- `public/assets/textures/earth_normal_2048.png`
+- `public/assets/textures/earth_specular_2048.png`
+- `public/assets/textures/earth_roughness_2048.png`

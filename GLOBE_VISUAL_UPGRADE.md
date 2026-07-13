@@ -30,3 +30,10 @@
 - The WebGL scene renders at display rate; DOM icon projection updates every second frame.
 - Rendering pauses when the globe is outside the viewport or the browser tab is hidden.
 - No new JavaScript dependency was added.
+
+## Current implementation files
+
+- `public/script.js` contains the Three.js scene, shaders, routes, particles, bloom, and adaptive rendering.
+- `public/assets/textures` contains all local Earth material maps.
+- `src/pages/index.astro` contains the projected overlay markup and controls.
+- `src/styles/global.css` contains the globe stage and responsive presentation.

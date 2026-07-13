@@ -1,6 +1,6 @@
 # Spider-Web Performance Optimization
 
-Only the ambient `spider-web.js` layer was optimized. The Three.js globe, GSAP timelines, page layout, sections, and existing styling were not modified.
+Only the ambient `public/spider-web.js` layer was optimized. The Three.js globe, GSAP timelines, page layout, sections, and existing styling were not modified.
 
 ## Changes
 

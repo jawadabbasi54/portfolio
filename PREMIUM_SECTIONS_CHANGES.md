@@ -9,3 +9,9 @@ Updates outside the globe:
 - A page-level animated keyboard arrow indicates scrolling progress.
 - Premium glass refinements for Expertise, Work, About, and Contact.
 - Contact area now includes email, LinkedIn, and `+92 332 5501123`.
+
+## Current implementation files
+
+- `src/pages/index.astro` contains the Expertise, Work, Experience, About, and Contact sections.
+- `src/styles/global.css` contains their crystal-glass and responsive presentation.
+- `public/script.js` contains the GSAP section motion and interaction behavior.

@@ -9,3 +9,8 @@ Only the existing globe lighting and post-processing values were refined.
 - Tightened the Fresnel atmosphere into a cleaner edge glow.
 - Reduced glass-shell reflection opacity.
 - Preserved the existing structure, routes, markers, controls, GSAP lifecycle, layout, and interactions.
+
+## Current implementation files
+
+- `public/script.js` contains the globe materials, lighting, atmosphere, and post-processing configuration.
+- Globe texture inputs are stored under `public/assets/textures`.

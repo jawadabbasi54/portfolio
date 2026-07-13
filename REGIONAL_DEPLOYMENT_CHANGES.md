@@ -14,3 +14,9 @@ Only the requested globe refinements were applied.
 - Reduced background pin intensity behind labels.
 
 The existing globe materials, page layout, portfolio sections, navigation, rotation, zoom, feedback loop, and layer controls were not redesigned.
+
+## Current implementation files
+
+- `public/script.js` contains region coordinates, projection, cards, and sequential deployment behavior.
+- `src/pages/index.astro` contains deployment paths, region overlay containers, and layer controls.
+- `src/styles/global.css` contains labels, cards, pins, pulses, and responsive positioning.
