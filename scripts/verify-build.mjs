@@ -18,6 +18,8 @@ function assert(condition, message) {
 
 for (const route of expectedRoutes) assert(existsSync(join(dist, route)), `Missing generated route: ${route}`);
 assert(statSync(join(dist, "Jawad_Abbasi_Resume.pdf")).size > 50_000, "Résumé PDF is missing or unexpectedly small");
+assert(statSync(join(dist, "assets/textures/earth_land_mask_2048.webp")).size > 50_000, "Geographic land mask is missing or unexpectedly small");
+assert(!readFileSync(join(dist, "script.js"), "utf8").includes("aws_region_embedded"), "Legacy embedded-region artifact texture is still referenced");
 
 const home = readFileSync(join(dist, "index.html"), "utf8");
 for (const required of [
@@ -48,4 +50,4 @@ for (const route of expectedRoutes.filter((route) => route.startsWith("case-stud
 const robots = readFileSync(join(dist, "robots.txt"), "utf8");
 assert(robots.includes("https://jawadabbasi.com/sitemap-index.xml"), "robots.txt is missing the production sitemap");
 
-console.log(`Verified ${expectedRoutes.length} routes, metadata, résumé, sitemap, robots policy, and 404 indexing.`);
+console.log(`Verified ${expectedRoutes.length} routes, metadata, résumé, globe assets, sitemap, robots policy, and 404 indexing.`);

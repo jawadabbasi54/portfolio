@@ -17,6 +17,12 @@ This record describes the globe rendering-quality work. Later performance work a
 - Deferred texture loading behind the lightweight page bootstrap
 - Smooth city-light highlight roll-off that prevents dense texture samples from clipping into white hotspots
 - Removed the redundant embedded AWS-region starburst texture; projected region pins and deployment effects remain the single region-visualization layer
+- Natural Earth coastline masking keeps every emissive city-light sample on land
+- Foreground star exclusion keeps decorative space particles outside the visible Earth silhouette
+- Firm high-detail coastline sampling prevents faded emissive leakage beyond land boundaries
+- A desktop-only warm illumination bed gives populated regions a visibly richer night-side finish
+- Full baked-halo removal prevents the base surface from leaking faded rings beneath the land-masked emissive layer
+- Capability-aware desktop light gain adds a warmer, more visible night-light finish without increasing mobile rendering cost
 
 ## Changed files
 
@@ -27,3 +33,4 @@ This record describes the globe rendering-quality work. Later performance work a
 - `public/assets/textures/earth_normal_2048.png`
 - `public/assets/textures/earth_specular_2048.png`
 - `public/assets/textures/earth_roughness_2048.png`
+- `public/assets/textures/earth_land_mask_2048.webp`

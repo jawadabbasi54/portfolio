@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-07-14 — Geographic city-light boundaries
+
+- Added a dedicated 1:50m Natural Earth land mask so emissive night lights cannot float over oceans beyond coastlines.
+- Removed residual baked-light contribution outside the same geographic boundary.
+- Excluded foreground star particles from the globe's view corridor so decorative space dust cannot appear over the Earth surface.
+- Replaced the soft coastline fade with a firm, high-detail geographic cutoff and suppressed the redundant globe-local star shells.
+- Increased desktop city-light presence with stronger capability-aware gain, warm point cores, and a subtle land-masked illumination bed; mobile intensity and performance remain unchanged.
+- Removed the complete low-energy footprint of city halos baked into the base surface before adding the clean emissive layer, eliminating faded offshore rings.
+- Raised the desktop amber core and concentrated population glow to make the premium night-side treatment clearly visible.
+- Refined the enhanced desktop palette from deployment orange to a more natural premium warm gold.
+- Added a reproducible land-mask generator and build assertions for the mask and removed artifact texture.
+- Updated runtime cache keys so deployed browsers load the revised globe immediately.
+
 ## 2026-07-14 — Embedded region artifact removal
 
 - Removed the redundant procedural AWS-region texture whose amplified starburst shapes appeared as white crosses and rectangles on desktop and mobile GPUs.

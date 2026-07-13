@@ -9,6 +9,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "verify:build": "node scripts/verify-build.mjs",
+    "assets:land-mask": "node scripts/generate-land-mask.mjs",
     "test:e2e": "playwright test",
     "quality": "npm run check && npm run build && npm run verify:build"
   },
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@playwright/test": "^1.55.1",
+    "sharp": "^0.35.3",
     "typescript": "^6.0.3"
   }
 }

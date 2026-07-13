@@ -407,12 +407,23 @@
     const minRadius = options.minRadius || 10;
     const maxRadius = options.maxRadius || 24;
     for (let index = 0; index < count; index += 1) {
-      const radius = minRadius + Math.random() * (maxRadius - minRadius);
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      positions[index * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[index * 3 + 1] = radius * Math.cos(phi);
-      positions[index * 3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+      let x;
+      let y;
+      let z;
+      do {
+        const radius = minRadius + Math.random() * (maxRadius - minRadius);
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        x = radius * Math.sin(phi) * Math.cos(theta);
+        y = radius * Math.cos(phi);
+        z = radius * Math.sin(phi) * Math.sin(theta);
+        // Transparent foreground stars are genuinely closer than the opaque
+        // Earth, so depth testing would place them over the map. Keep a clean
+        // view corridor around the globe while retaining the full outer field.
+      } while (z > 0 && Math.hypot(x, y) < 2.78);
+      positions[index * 3] = x;
+      positions[index * 3 + 1] = y;
+      positions[index * 3 + 2] = z;
       color.set(index % 17 === 0 ? 0xffa34f : index % 7 === 0 ? 0x4f9cff : 0xc8e3ff);
       colors[index * 3] = color.r;
       colors[index * 3 + 1] = color.g;
@@ -794,7 +805,10 @@
     });
     [starsFar, starsNear, spaceDust].forEach((layer) => {
       layer.material.uniforms.uPixelRatio.value = renderer.getPixelRatio();
-      scene.add(layer);
+      // The page-level constellation already supplies ambient space depth.
+      // Keep globe-local star shells dormant so their bright points cannot be
+      // mistaken for city lights floating beyond geographic boundaries.
+      layer.visible = false;
     });
 
     const bloomPipeline = createBloomPipeline(
@@ -834,10 +848,12 @@
       specular: "/assets/textures/earth_specular_1024.webp?v=20260714-adaptive1",
       roughness: "/assets/textures/earth_roughness_1024.webp?v=20260714-adaptive1"
     };
-    const [surfaceMap, lightsMap, lightMaskMap, normalMap, specularMap, roughnessMap] = await Promise.all([
+    const cityLightGain = compactViewport ? 1.0 : quality === "high" ? 2.05 : 1.80;
+    const [surfaceMap, lightsMap, lightMaskMap, landMaskMap, normalMap, specularMap, roughnessMap] = await Promise.all([
       loadTexture(textureSet.surface, anisotropy),
       loadTexture(textureSet.lights, anisotropy),
       loadTexture(textureSet.lightMask, anisotropy),
+      loadTexture("/assets/textures/earth_land_mask_2048.webp?v=20260714-landmask1", anisotropy),
       loadTexture(textureSet.normal, anisotropy),
       loadTexture(textureSet.specular, anisotropy),
       loadTexture(textureSet.roughness, anisotropy)
@@ -848,15 +864,18 @@
       uSurfaceMap: { value: surfaceMap || new T.Texture() },
       uLightsMap: { value: lightsMap || new T.Texture() },
       uLightMaskMap: { value: lightMaskMap || new T.Texture() },
+      uLandMaskMap: { value: landMaskMap || new T.Texture() },
       uNormalMap: { value: normalMap || new T.Texture() },
       uSpecularMap: { value: specularMap || new T.Texture() },
       uRoughnessMap: { value: roughnessMap || new T.Texture() },
       uHasSurfaceMap: { value: surfaceMap ? 1 : 0 },
       uHasLightsMap: { value: lightsMap ? 1 : 0 },
       uHasLightMaskMap: { value: lightMaskMap ? 1 : 0 },
+      uHasLandMaskMap: { value: landMaskMap ? 1 : 0 },
       uHasNormalMap: { value: normalMap ? 1 : 0 },
       uHasSpecularMap: { value: specularMap ? 1 : 0 },
-      uHasRoughnessMap: { value: roughnessMap ? 1 : 0 }
+      uHasRoughnessMap: { value: roughnessMap ? 1 : 0 },
+      uCityLightGain: { value: cityLightGain }
     };
 
     const coreMaterial = new T.ShaderMaterial({
@@ -883,15 +902,18 @@
         uniform sampler2D uSurfaceMap;
         uniform sampler2D uLightsMap;
         uniform sampler2D uLightMaskMap;
+        uniform sampler2D uLandMaskMap;
         uniform sampler2D uNormalMap;
         uniform sampler2D uSpecularMap;
         uniform sampler2D uRoughnessMap;
         uniform float uHasSurfaceMap;
         uniform float uHasLightsMap;
         uniform float uHasLightMaskMap;
+        uniform float uHasLandMaskMap;
         uniform float uHasNormalMap;
         uniform float uHasSpecularMap;
         uniform float uHasRoughnessMap;
+        uniform float uCityLightGain;
         varying vec2 vUv;
         varying vec3 vNormalV;
         varying vec3 vViewDir;
@@ -959,14 +981,25 @@
           if (uHasLightMaskMap > 0.5) {
             lightMask = srgbToLinear(texture2D(uLightMaskMap, vUv, -0.15).rgb);
           }
+          float landCoverage = 1.0;
+          if (uHasLandMaskMap > 0.5) {
+            // Sample a sharper mip and use a firm cutoff. The previous soft
+            // transition intentionally faded across coastlines, which left a
+            // few dim points visible just beyond the geographic boundary.
+            landCoverage = step(0.62, texture2D(uLandMaskMap, vUv, -0.75).r);
+          }
+          city *= landCoverage;
           float cityLuma = max(city.r, max(city.g, city.b));
           float cityPoint = smoothstep(0.0025, 0.16, cityLuma);
           float cityCore = smoothstep(0.055, 0.62, cityLuma);
           float bakedLightLuma = max(lightMask.r, max(lightMask.g, lightMask.b));
-          float bakedLightMask = smoothstep(0.0018, 0.18, bakedLightLuma);
+          // The surface texture contains a faint baked halo around its original
+          // lights. Capture the full low-energy footprint so it can be removed
+          // before the clean, geographically masked light layer is added back.
+          float bakedLightMask = smoothstep(0.00002, 0.014, bakedLightLuma);
           // The diffuse map contains baked lights. Remove their broad footprint
           // with the original mask, then add only the discrete point map once.
-          surface *= (1.0 - bakedLightMask * 0.965);
+          surface *= (1.0 - bakedLightMask * 0.998);
           vec2 cityCell = floor(vUv * vec2(2048.0, 1024.0));
           float citySeed = fract(sin(dot(cityCell, vec2(12.9898, 78.233))) * 43758.5453);
           float cityTwinkle = 0.91 + 0.09 * sin(uTime * (0.72 + citySeed * 1.25) + citySeed * 6.2831853);
@@ -991,12 +1024,16 @@
           // contrast clamp turned the strongest neighbouring texels into pure
           // white blocks. This luminance roll-off keeps small lights crisp while
           // compressing only the extreme cores before the renderer's ACES pass.
-          vec3 cityRadiance = city * (3.0 + cityPoint * 2.2 + cityCore * 1.4) * cityTwinkle;
+          vec3 cityRadiance = city * (3.0 + cityPoint * 2.2 + cityCore * 1.4) * cityTwinkle * uCityLightGain;
           float cityPeak = max(cityRadiance.r, max(cityRadiance.g, cityRadiance.b));
           float cityRolledPeak = cityPeak / (1.0 + cityPeak * 0.68);
           vec3 cityColor = cityRadiance * (cityRolledPeak / max(cityPeak, 0.00001));
           float hotspotMix = smoothstep(0.65, 2.0, cityPeak) * 0.72;
           cityColor *= mix(vec3(1.0), vec3(1.0, 0.68, 0.30), hotspotMix);
+          float desktopLift = clamp(uCityLightGain - 1.0, 0.0, 1.10);
+          float cityAura = pow(smoothstep(0.00025, 0.050, bakedLightLuma) * landCoverage, 1.28);
+          cityColor += vec3(1.0, 0.62, 0.18) * cityPoint * desktopLift * 0.24;
+          cityColor += vec3(1.0, 0.44, 0.08) * cityAura * desktopLift * 0.24;
           color += cityColor;
           color += vec3(0.055, 0.42, 0.98) * scan * 0.010;
           color += vec3(0.006, 0.027, 0.082) * (1.0 - baseLuma) * 0.10;
