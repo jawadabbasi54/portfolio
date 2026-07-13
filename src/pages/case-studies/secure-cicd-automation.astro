@@ -1,0 +1,42 @@
+---
+import CaseStudyLayout from "../../layouts/CaseStudyLayout.astro";
+---
+
+<CaseStudyLayout
+  title="Secure CI/CD Automation Case Study | Jawad Abbasi"
+  description="Secure application and infrastructure delivery with Jenkins, Bitbucket Pipelines, EC2 runners, OIDC, Snyk, and AWS."
+  slug="secure-cicd-automation"
+  eyebrow="DEVSECOPS · JENKINS · BITBUCKET PIPELINES"
+  heading="A credential-free path from source control to AWS."
+  intro="Delivery pipelines that combine controlled AWS access, self-hosted execution, code-quality and vulnerability checks, container builds, testing, and environment-aware releases."
+  tags={["Jenkins", "Bitbucket Pipelines", "OIDC", "Docker", "Amazon ECR", "Snyk"]}
+>
+  <section>
+    <p class="case-section-label">OBJECTIVE</p>
+    <h2>Automate releases without embedding long-lived cloud credentials.</h2>
+    <p>Application and infrastructure pipelines need enough AWS access to deliver change, but persistent access keys increase operational and security risk. The delivery system also needs predictable execution capacity and clear quality gates.</p>
+  </section>
+
+  <section>
+    <p class="case-section-label">PIPELINE DESIGN</p>
+    <div class="case-detail-grid">
+      <article><span>01</span><h3>Source and review</h3><p>Git and GitFlow practices organize application and infrastructure changes before automated execution begins.</p></article>
+      <article><span>02</span><h3>Isolated execution</h3><p>Jenkins and self-hosted Bitbucket Runners on EC2 provide controlled build environments for delivery workloads.</p></article>
+      <article><span>03</span><h3>Short-lived AWS access</h3><p>OIDC federation replaces stored AWS access keys with scoped, temporary credentials issued for the pipeline run.</p></article>
+      <article><span>04</span><h3>Quality and security</h3><p>SonarQube, SonarLint, and Snyk checks strengthen code-quality and vulnerability feedback before release.</p></article>
+      <article><span>05</span><h3>Build and package</h3><p>Bash and Python automation supports application builds, Lambda packaging, Docker image creation, and Amazon ECR workflows.</p></article>
+      <article><span>06</span><h3>Controlled deployment</h3><p>Environment-aware stages deliver approved versions to the appropriate AWS services and preserve an operational release trail.</p></article>
+    </div>
+  </section>
+
+  <section class="case-two-column">
+    <div><p class="case-section-label">OPERATIONS</p><h2>The pipeline remains part of production support.</h2></div>
+    <div><p>Release visibility connects with Jira planning, Confluence runbooks, Slack notifications, and incident response. When a deployment contributes to an issue, the same documented workflow supports investigation, rollback decisions, and the next corrective release.</p></div>
+  </section>
+
+  <section class="case-result glass-panel">
+    <p class="case-section-label">OUTCOME</p>
+    <h2>Faster delivery with a smaller credential footprint.</h2>
+    <p>Automation makes build and deployment behavior repeatable across environments, while OIDC and integrated security checks reduce reliance on persistent secrets and move feedback earlier in the delivery cycle.</p>
+  </section>
+</CaseStudyLayout>

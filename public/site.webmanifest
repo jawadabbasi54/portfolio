@@ -1,0 +1,26 @@
+{
+  "name": "Jawad Abbasi — Senior DevOps Engineer",
+  "short_name": "Jawad Abbasi",
+  "description": "Senior DevOps Engineer portfolio focused on AWS, Terraform, CI/CD, DevSecOps, IoT, and production reliability.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#02050f",
+  "theme_color": "#030817",
+  "icons": [
+    {
+      "src": "/assets/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

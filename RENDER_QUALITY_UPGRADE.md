@@ -1,6 +1,6 @@
 # Rendering Quality Upgrade
 
-This update changes only globe rendering quality and texture assets. The layout, camera, UI, interactions, animations, component hierarchy, controls, and section structure are unchanged.
+This record describes the globe rendering-quality work. Later performance work added adaptive delivery tiers without changing the intended high-end appearance.
 
 ## Improvements
 
@@ -13,6 +13,8 @@ This update changes only globe rendering quality and texture assets. The layout,
 - Thin, crisp Fresnel atmosphere and reduced glass haze
 - Tighter orbit and marker glow
 - Adaptive pixel ratio retained for performance
+- 2K and 1K WebP texture tiers selected from device capability and Save-Data preference
+- Deferred texture loading behind the lightweight page bootstrap
 
 ## Changed files
 

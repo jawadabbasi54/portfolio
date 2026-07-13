@@ -1,0 +1,41 @@
+---
+import CaseStudyLayout from "../../layouts/CaseStudyLayout.astro";
+---
+
+<CaseStudyLayout
+  title="Terraform Multi-Environment AWS Case Study | Jawad Abbasi"
+  description="A practical Terraform approach for consistent Development, QA, Staging, and Production AWS infrastructure."
+  slug="terraform-multi-environment-infrastructure"
+  eyebrow="TERRAFORM · INFRASTRUCTURE AS CODE · AWS"
+  heading="Turning multi-environment AWS infrastructure into reviewed code."
+  intro="A repeatable Infrastructure as Code workflow designed to reduce manual configuration, expose change before deployment, and keep cloud environments aligned."
+  tags={["Terraform", "AWS", "Infrastructure as Code", "GitFlow", "IAM", "Cloud Networking"]}
+>
+  <section>
+    <p class="case-section-label">PROBLEM</p>
+    <h2>Manual infrastructure changes create invisible differences.</h2>
+    <p>Four delivery environments can drift when networking, compute, databases, edge services, access policies, and application configuration are managed independently. Those differences make releases harder to predict and production incidents harder to reproduce.</p>
+  </section>
+
+  <section>
+    <p class="case-section-label">DELIVERY MODEL</p>
+    <h2>Plan, review, provision, and document.</h2>
+    <div class="case-process">
+      <article><span>01</span><div><h3>Model infrastructure</h3><p>Represent AWS resources and environment-specific inputs in version-controlled Terraform rather than relying on console-only configuration.</p></div></article>
+      <article><span>02</span><div><h3>Validate proposed change</h3><p>Run formatting, validation, and plan stages so reviewers can see intended infrastructure impact before application.</p></div></article>
+      <article><span>03</span><div><h3>Apply with controlled credentials</h3><p>Use pipeline-managed AWS access and least-privilege IAM boundaries to make infrastructure delivery auditable and repeatable.</p></div></article>
+      <article><span>04</span><div><h3>Operate from the same source</h3><p>Keep architectural decisions, release procedures, and runbooks aligned with the infrastructure definition in Git and Confluence.</p></div></article>
+    </div>
+  </section>
+
+  <section class="case-two-column">
+    <div><p class="case-section-label">COVERAGE</p><h2>Infrastructure beyond compute.</h2></div>
+    <div><p>The workflow covers the platform layers that influence reliability: VPC networking, IAM, Route 53, API Gateway, CloudFront, Global Accelerator, Elastic Beanstalk, Lambda, Aurora PostgreSQL, IoT Core, Secrets Manager, KMS, ACM, and monitoring integrations.</p></div>
+  </section>
+
+  <section class="case-result glass-panel">
+    <p class="case-section-label">OUTCOME</p>
+    <h2>Consistency becomes a delivery property.</h2>
+    <p>Infrastructure changes are visible before execution, environment creation becomes repeatable, and manual configuration effort is reduced. The same workflow supports day-to-day releases, security changes, scaling work, and incident recovery.</p>
+  </section>
+</CaseStudyLayout>

@@ -12,6 +12,10 @@
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+  const deviceMemory = navigator.deviceMemory || 4;
+  const saveData = Boolean(navigator.connection?.saveData);
+  const lowPower = coarsePointer || deviceMemory <= 4 || saveData;
+  const staticMode = reducedMotion || coarsePointer || saveData || deviceMemory <= 2;
   const pointer = { x: -1000, y: -1000, active: false };
   const particles = [];
   const spatialBuckets = new Map();
@@ -23,12 +27,14 @@
   let lastFrame = 0;
   let resizeTimer = 0;
   let globeIsInteracting = false;
+  let globeIsVisible = false;
   let frameIndex = 0;
 
   // The visual character stays the same, but the ambient canvas is intentionally
   // kept below the Three.js globe's render priority.
-  const NORMAL_FRAME_INTERVAL = 1000 / 24;
-  const IDLE_FRAME_INTERVAL = 1000 / 18;
+  const NORMAL_FRAME_INTERVAL = 1000 / (lowPower ? 10 : 24);
+  const IDLE_FRAME_INTERVAL = 1000 / (lowPower ? 8 : 18);
+  const GLOBE_VISIBLE_FRAME_INTERVAL = 1000 / (lowPower ? 6 : 10);
   const GRID_SIZE = 150;
   const MAX_CONNECTIONS = 4;
 
@@ -78,8 +84,8 @@
   function desiredParticleCount() {
     const area = width * height;
     const responsiveCount = Math.round(area / 34000);
-    const upperLimit = width < 760 ? 38 : width < 1280 ? 46 : 56;
-    return Math.max(width < 760 ? 26 : 34, Math.min(upperLimit, responsiveCount));
+    const upperLimit = lowPower ? (width < 760 ? 26 : 34) : width < 760 ? 38 : width < 1280 ? 46 : 56;
+    return Math.max(width < 760 ? 20 : 28, Math.min(upperLimit, responsiveCount));
   }
 
   function createParticle(index) {
@@ -268,14 +274,16 @@
     // stays visible, but the WebGL scene receives the full frame budget.
     if (globeIsInteracting) return;
 
-    const interval = pointer.active ? NORMAL_FRAME_INTERVAL : IDLE_FRAME_INTERVAL;
-    if (!reducedMotion && elapsed - lastFrame < interval) return;
+    const interval = globeIsVisible
+      ? GLOBE_VISIBLE_FRAME_INTERVAL
+      : pointer.active ? NORMAL_FRAME_INTERVAL : IDLE_FRAME_INTERVAL;
+    if (!staticMode && elapsed - lastFrame < interval) return;
     lastFrame = elapsed;
     frameIndex += 1;
 
     drawFrame(elapsed, true);
 
-    if (reducedMotion) {
+    if (staticMode) {
       cancelAnimationFrame(animationFrame);
       animationFrame = 0;
     }
@@ -304,6 +312,13 @@
     globeCanvas.addEventListener("pointerup", () => setGlobeInteraction(false), { passive: true });
     globeCanvas.addEventListener("pointercancel", () => setGlobeInteraction(false), { passive: true });
     globeCanvas.addEventListener("lostpointercapture", () => setGlobeInteraction(false), { passive: true });
+  }
+  const globeStage = document.getElementById("globe-stage");
+  if (globeStage && "IntersectionObserver" in window) {
+    const globeObserver = new IntersectionObserver(([entry]) => {
+      globeIsVisible = entry.isIntersecting && entry.intersectionRatio > 0.02;
+    }, { threshold: [0, 0.02, 0.2] });
+    globeObserver.observe(globeStage);
   }
   window.addEventListener("pointerup", () => setGlobeInteraction(false), { passive: true });
 

@@ -1,0 +1,40 @@
+---
+import CaseStudyLayout from "../../layouts/CaseStudyLayout.astro";
+---
+
+<CaseStudyLayout
+  title="AWS Observability and Incident Response Case Study | Jawad Abbasi"
+  description="CloudWatch observability, centralized Slack alerting, incident response, RCA, and runbooks for enterprise AWS operations."
+  slug="observability-incident-response"
+  eyebrow="CLOUDWATCH · ALERTING · PRODUCTION RELIABILITY"
+  heading="Connecting production signals to decisive incident response."
+  intro="An operational feedback loop that consolidates AWS and delivery-system signals, routes actionable alerts, and turns incident findings into documented reliability improvements."
+  tags={["CloudWatch", "CloudTrail", "Slack", "AWS Health", "RCA", "Runbooks"]}
+>
+  <section>
+    <p class="case-section-label">CHALLENGE</p>
+    <h2>More alerts do not automatically create better visibility.</h2>
+    <p>Enterprise cloud platforms emit signals from infrastructure, applications, AWS services, source control, issue tracking, and client-side monitoring. Without prioritization and a shared response path, useful signals can become fragmented noise.</p>
+  </section>
+
+  <section>
+    <p class="case-section-label">OPERATING MODEL</p>
+    <div class="case-process">
+      <article><span>01</span><div><h3>Observe</h3><p>CloudWatch dashboards, metrics, logs, and alarms expose service health and operational trends across environments.</p></div></article>
+      <article><span>02</span><div><h3>Centralize</h3><p>Slack alerting brings together CloudWatch, AWS Health, Bitbucket, Jira, and LogRocket signals in a shared operational channel.</p></div></article>
+      <article><span>03</span><div><h3>Respond</h3><p>Incident handling combines triage, infrastructure and application troubleshooting, stakeholder communication, and recovery actions.</p></div></article>
+      <article><span>04</span><div><h3>Learn</h3><p>Root cause analysis, Confluence documentation, architectural updates, and backlog work convert incidents into durable improvements.</p></div></article>
+    </div>
+  </section>
+
+  <section class="case-two-column">
+    <div><p class="case-section-label">SECURITY CONTEXT</p><h2>Reliability signals sit beside security signals.</h2></div>
+    <div><p>CloudTrail, GuardDuty, Detective, WAF, IAM, Secrets Manager, and KMS provide surrounding security context. Operational investigation can therefore consider configuration, identity, application behavior, and infrastructure health together.</p></div>
+  </section>
+
+  <section class="case-result glass-panel">
+    <p class="case-section-label">OUTCOME</p>
+    <h2>A shorter path from detection to improvement.</h2>
+    <p>Centralized alerting and documented response procedures improve situational awareness, support high-availability production operations, and give engineering teams a repeatable way to feed incident learning back into infrastructure and delivery workflows.</p>
+  </section>
+</CaseStudyLayout>

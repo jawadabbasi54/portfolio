@@ -1,0 +1,17 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+---
+
+<BaseLayout title="Page Not Found | Jawad Abbasi" description="The requested page could not be found." canonical="https://jawadabbasi.com/404" pageType="webpage" noIndex>
+  <canvas class="spider-web-background" id="spider-web-background" aria-hidden="true"></canvas>
+  <SiteHeader />
+  <main class="not-found section-shell">
+    <p>404 · ROUTE NOT FOUND</p>
+    <h1>This deployment path doesn’t exist.</h1>
+    <p>The requested page may have moved, or the URL may be incorrect. Return to the portfolio or explore the published case studies.</p>
+    <div><a class="button button-primary" href="/">Back to portfolio <span>→</span></a><a class="button button-secondary" href="/#work">View case studies</a></div>
+  </main>
+  <SiteFooter />
+</BaseLayout>

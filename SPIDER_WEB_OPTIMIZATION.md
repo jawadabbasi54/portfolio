@@ -1,6 +1,6 @@
 # Spider-Web Performance Optimization
 
-Only the ambient `public/spider-web.js` layer was optimized. The Three.js globe, GSAP timelines, page layout, sections, and existing styling were not modified.
+This record covers performance work in the ambient `public/spider-web.js` layer.
 
 ## Changes
 
@@ -12,11 +12,9 @@ Only the ambient `public/spider-web.js` layer was optimized. The Three.js globe,
 - Replaced all-to-all particle comparisons with a spatial grid.
 - Debounced canvas resize work.
 - Continues to pause when the browser tab is hidden and respects reduced-motion preferences.
+- Uses a static, responsive constellation on coarse-pointer, narrow, low-memory, or Save-Data devices, avoiding a continuous background animation where it offers little interaction value.
+- Reduces its active frame rate while the globe is visible so the decorative canvas does not compete with WebGL rendering.
 
 ## Unchanged
 
-- Globe files and globe behavior
-- GSAP timeline logic
-- HTML layout and portfolio content
-- CSS presentation
 - Constellation palette, twinkle, pointer attraction, and connecting-line visual style

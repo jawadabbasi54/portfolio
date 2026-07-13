@@ -44,10 +44,13 @@
     });
   }
 
-  initNavigation();
-  initReveal();
-  const year = qs("#year");
-  if (year) year.textContent = String(new Date().getFullYear());
+  if (!window.__portfolioPageCoreInitialized) {
+    initNavigation();
+    initReveal();
+    const year = qs("#year");
+    if (year) year.textContent = String(new Date().getFullYear());
+    window.__portfolioPageCoreInitialized = true;
+  }
 
   const stage = qs("#globe-stage");
   const canvas = qs("#globe-canvas");
@@ -87,8 +90,8 @@
           once: true
         }
       });
-      tl.fromTo(eyebrow, { autoAlpha: 0, y: 18, letterSpacing: ".34em" }, { autoAlpha: 1, y: 0, letterSpacing: ".22em", duration: .7, ease: "power4.out" })
-        .fromTo(title, { autoAlpha: 0, y: 42, rotateX: -7 }, { autoAlpha: 1, y: 0, rotateX: 0, duration: 1.05, ease: "expo.out" }, "-=.42")
+      tl.fromTo(eyebrow, { y: 18, letterSpacing: ".34em" }, { y: 0, letterSpacing: ".22em", duration: .7, ease: "power4.out" })
+        .fromTo(title, { y: 42, rotateX: -7 }, { y: 0, rotateX: 0, duration: 1.05, ease: "expo.out" }, "-=.42")
         .fromTo(line, { scaleX: 0, autoAlpha: .2 }, { scaleX: 1, autoAlpha: 1, duration: .8, ease: "power4.out" }, "-=.66");
     });
 
@@ -106,9 +109,8 @@
         const targets = qsa(targetSelector, trigger.closest("section") || document);
         if (!targets.length) return;
         gsapApi.fromTo(targets,
-          { autoAlpha: 0, y: 44, scale: .965 },
+          { y: 44, scale: .965 },
           {
-            autoAlpha: 1,
             y: 0,
             scale: 1,
             duration: .9,
@@ -122,9 +124,8 @@
       const experienceCards = qsa(".crystal-experience-card");
       experienceCards.forEach((card, index) => {
         gsapApi.fromTo(card,
-          { autoAlpha: 0, x: index % 2 === 0 ? -54 : 54, y: 26, rotateY: index % 2 === 0 ? -3 : 3 },
+          { x: index % 2 === 0 ? -54 : 54, y: 26, rotateY: index % 2 === 0 ? -3 : 3 },
           {
-            autoAlpha: 1,
             x: 0,
             y: 0,
             rotateY: 0,
@@ -232,6 +233,8 @@
   function failScene(error) {
     console.error("Interactive crystal globe failed:", error);
     if (fallbackTimer) window.clearTimeout(fallbackTimer);
+    const fallback = qs("#prototype-fallback");
+    if (fallback && !fallback.getAttribute("src")) fallback.setAttribute("src", fallback.dataset.src || "");
     if (stage) stage.classList.add("scene-failed");
     if (loader) loader.setAttribute("aria-hidden", "true");
     if (errorPanel) errorPanel.hidden = false;
@@ -731,8 +734,11 @@
 
   async function initGlobe() {
     const deviceCores = navigator.hardwareConcurrency || 4;
+    const deviceMemory = navigator.deviceMemory || 4;
+    const saveData = Boolean(navigator.connection?.saveData);
     const compactViewport = window.innerWidth < 760;
-    const quality = compactViewport || deviceCores <= 4 ? "low" : deviceCores >= 8 ? "high" : "medium";
+    const constrainedDevice = saveData || deviceMemory <= 4 || deviceCores <= 4;
+    const quality = compactViewport || constrainedDevice ? "low" : deviceCores >= 8 && deviceMemory >= 8 ? "high" : "medium";
     // A desktop globe needs enough drawing-buffer resolution to preserve the
     // 4K light-map detail. Keep the existing adaptive scaler, but avoid the
     // previous 1.22 DPR desktop ceiling on four-core machines.
@@ -806,14 +812,39 @@
     // Anisotropy is inexpensive for this single sphere and materially improves
     // texture detail toward the limb, so use the renderer's supported maximum.
     const anisotropy = Math.max(1, renderer.capabilities.getMaxAnisotropy());
+    const textureSet = quality === "high" ? {
+      surface: "/assets/textures/earth_surface_4096.png?v=20260712-sharp1",
+      lights: "/assets/textures/earth_lights_points_4096.png?v=20260712-sharp1",
+      lightMask: "/assets/textures/earth_lights_4096.png?v=20260712-sharp1",
+      normal: "/assets/textures/earth_normal_2048.png?v=20260712-sharp1",
+      specular: "/assets/textures/earth_specular_2048.png?v=20260712-sharp1",
+      roughness: "/assets/textures/earth_roughness_2048.png?v=20260712-sharp1",
+      regions: "/assets/textures/aws_region_embedded_4096.png?v=20260712-regionembed1"
+    } : quality === "medium" ? {
+      surface: "/assets/textures/earth_surface_2048.webp?v=20260714-adaptive1",
+      lights: "/assets/textures/earth_lights_points_2048.webp?v=20260714-adaptive1",
+      lightMask: "/assets/textures/earth_lights_1024.webp?v=20260714-adaptive1",
+      normal: "/assets/textures/earth_normal_1024.webp?v=20260714-adaptive1",
+      specular: "/assets/textures/earth_specular_1024.webp?v=20260714-adaptive1",
+      roughness: "/assets/textures/earth_roughness_1024.webp?v=20260714-adaptive1",
+      regions: "/assets/textures/aws_region_embedded_2048.webp?v=20260714-adaptive1"
+    } : {
+      surface: "/assets/textures/earth_surface_1024.webp?v=20260714-adaptive1",
+      lights: "/assets/textures/earth_lights_points_2048.webp?v=20260714-adaptive1",
+      lightMask: "/assets/textures/earth_lights_1024.webp?v=20260714-adaptive1",
+      normal: "/assets/textures/earth_normal_1024.webp?v=20260714-adaptive1",
+      specular: "/assets/textures/earth_specular_1024.webp?v=20260714-adaptive1",
+      roughness: "/assets/textures/earth_roughness_1024.webp?v=20260714-adaptive1",
+      regions: "/assets/textures/aws_region_embedded_2048.webp?v=20260714-adaptive1"
+    };
     const [surfaceMap, lightsMap, lightMaskMap, normalMap, specularMap, roughnessMap, regionGlowMap] = await Promise.all([
-      loadTexture("/assets/textures/earth_surface_4096.png?v=20260712-sharp1", anisotropy),
-      loadTexture("/assets/textures/earth_lights_points_4096.png?v=20260712-sharp1", anisotropy),
-      loadTexture("/assets/textures/earth_lights_4096.png?v=20260712-sharp1", anisotropy),
-      loadTexture("/assets/textures/earth_normal_2048.png?v=20260712-sharp1", anisotropy),
-      loadTexture("/assets/textures/earth_specular_2048.png?v=20260712-sharp1", anisotropy),
-      loadTexture("/assets/textures/earth_roughness_2048.png?v=20260712-sharp1", anisotropy),
-      loadTexture("/assets/textures/aws_region_embedded_4096.png?v=20260712-regionembed1", anisotropy)
+      loadTexture(textureSet.surface, anisotropy),
+      loadTexture(textureSet.lights, anisotropy),
+      loadTexture(textureSet.lightMask, anisotropy),
+      loadTexture(textureSet.normal, anisotropy),
+      loadTexture(textureSet.specular, anisotropy),
+      loadTexture(textureSet.roughness, anisotropy),
+      loadTexture(textureSet.regions, anisotropy)
     ]);
 
     const coreUniforms = {
@@ -1644,7 +1675,7 @@
         marker.dataset.cluster = region.cluster;
         marker.setAttribute("aria-expanded", "false");
         marker.setAttribute("aria-label", `${region.code}, ${region.city}, three Availability Zones`);
-        const clusterBadge = region.clusterCount ? `<i class="region-cluster-count">+${region.clusterCount}</i>` : "";
+        const clusterBadge = region.clusterCount ? `<i class="region-cluster-count" aria-hidden="true">+${region.clusterCount}</i>` : "";
         const compactLabel = region.featured
           ? `<span class="region-compact-label" style="--label-x:${region.labelOffset[0]}px;--label-y:${region.labelOffset[1]}px"><strong>${region.code}</strong><small>${region.city}</small>${clusterBadge}</span>`
           : "";
@@ -1754,15 +1785,14 @@
       applyLayerMode("all");
     }
 
-    function projectLocalPoint(localPosition) {
+    function projectLocalPoint(localPosition, stageRect = stage.getBoundingClientRect()) {
       world.updateMatrixWorld(true);
 
       // Project the globe-local anchor into screen space.
       const worldPoint = localPosition.clone().applyMatrix4(world.matrixWorld);
       const projected = worldPoint.clone().project(camera);
-      const rect = stage.getBoundingClientRect();
-      const x = (projected.x * 0.5 + 0.5) * rect.width;
-      const y = (-projected.y * 0.5 + 0.5) * rect.height;
+      const x = (projected.x * 0.5 + 0.5) * stageRect.width;
+      const y = (-projected.y * 0.5 + 0.5) * stageRect.height;
 
       // IMPORTANT: projected.z is clip-space depth and is normally close to 1 for
       // every visible object. Using it for opacity made every DOM icon almost
@@ -1785,11 +1815,10 @@
      * updated with the projected nodes, so rotation never detaches a route from
      * the globe surface.
      */
-    function updateGlobeSurfaceClip() {
+    function updateGlobeSurfaceClip(stageRect) {
       if (!globeSurfaceClipPath) return;
 
       const surfaceRadius = 2.13;
-      const stageRect = stage.getBoundingClientRect();
       const center = new T.Vector3(0, 0, 0).applyMatrix4(world.matrixWorld);
       const centerToCamera = camera.position.clone().sub(center);
       const distance = centerToCamera.length();
@@ -1830,12 +1859,12 @@
       globeSurfaceClipPath.setAttribute("d", `${d} Z`);
     }
 
-    function setProjectedNode(key) {
+    function setProjectedNode(key, stageRect) {
       const anchor = nodes.get(key);
       const element = domNodes.get(key);
-      if (!anchor || !element) return;
+      if (!anchor || !element) return null;
 
-      const point = projectLocalPoint(anchor.position);
+      const point = projectLocalPoint(anchor.position, stageRect);
       const visibility = clamp((point.facing + 0.10) / 0.30, 0, 1);
 
       element.style.left = `${point.x}px`;
@@ -1845,12 +1874,13 @@
       element.style.opacity = visibility.toFixed(3);
       element.style.visibility = visibility < 0.015 ? "hidden" : "visible";
       element.style.filter = point.facing < 0.08 ? "blur(.45px)" : "none";
+      return point;
     }
 
-    function updateRegionMarkers() {
+    function updateRegionMarkers(stageRect) {
       regionObjects.forEach((item) => {
         if (!item.marker) return;
-        const point = projectLocalPoint(item.position);
+        const point = projectLocalPoint(item.position, stageRect);
         const visibility = item.region.featured
           ? clamp((point.facing + 0.25) / 0.18, 0, 1)
           : clamp((point.facing + 0.10) / 0.28, 0, 1);
@@ -1862,16 +1892,6 @@
         item.marker.style.setProperty("--region-scale", clamp(point.depthScale * 0.92, 0.72, 1.04).toFixed(3));
         item.marker.classList.toggle("is-backside", point.facing < (item.region.featured ? -0.22 : 0.02));
       });
-    }
-
-    function centerInStage(element) {
-      if (!element) return { x: 0, y: 0 };
-      const elementRect = element.getBoundingClientRect();
-      const stageRect = stage.getBoundingClientRect();
-      return {
-        x: elementRect.left - stageRect.left + elementRect.width / 2,
-        y: elementRect.top - stageRect.top + elementRect.height / 2
-      };
     }
 
     function createSmoothPath(points, bend = 36) {
@@ -1899,26 +1919,27 @@
 
     function updateOverlayPaths() {
       if (!uiLayer || !codePath || !monitorPath || !deploymentPaths.length || !feedbackPath) return;
-      updateGlobeSurfaceClip();
-      nodeConfigs.forEach(({ key }) => setProjectedNode(key));
-      updateRegionMarkers();
+      const stageRect = stage.getBoundingClientRect();
+      updateGlobeSurfaceClip(stageRect);
+      const projectedNodes = new Map();
+      nodeConfigs.forEach(({ key }) => projectedNodes.set(key, setProjectedNode(key, stageRect)));
+      updateRegionMarkers(stageRect);
 
       const codePoints = [
-        centerInStage(developerOrb),
-        centerInStage(gitCluster),
-        ...stageIcons.map(centerInStage),
-        centerInStage(awsOrb)
+        projectedNodes.get("developer"),
+        projectedNodes.get("git"),
+        projectedNodes.get("cicd"),
+        projectedNodes.get("aws")
       ];
-      const monitorPoints = [centerInStage(awsOrb), centerInStage(cloudwatchOrb), centerInStage(alertsCluster)];
-      const alertPoint = centerInStage(alertsCluster);
-      const developerPoint = centerInStage(developerOrb);
-      const stageRect = stage.getBoundingClientRect();
+      const monitorPoints = [projectedNodes.get("aws"), projectedNodes.get("cloudwatch"), projectedNodes.get("alerts")];
+      const alertPoint = projectedNodes.get("alerts");
+      const developerPoint = projectedNodes.get("developer");
       const loopX = Math.max(34, Math.min(alertPoint.x, developerPoint.x) - 94);
       const loopY = Math.min(stageRect.height - 74, Math.max(alertPoint.y, developerPoint.y) + 112);
       const feedbackD = `M ${alertPoint.x.toFixed(2)} ${alertPoint.y.toFixed(2)} C ${(alertPoint.x - 86).toFixed(2)} ${(alertPoint.y + 28).toFixed(2)}, ${loopX.toFixed(2)} ${loopY.toFixed(2)}, ${loopX.toFixed(2)} ${loopY.toFixed(2)} C ${loopX.toFixed(2)} ${(developerPoint.y + 72).toFixed(2)}, ${(developerPoint.x - 80).toFixed(2)} ${(developerPoint.y + 44).toFixed(2)}, ${developerPoint.x.toFixed(2)} ${developerPoint.y.toFixed(2)}`;
 
-      const awsPoint = centerInStage(awsOrb);
-      const routePoints = waveRouteIndices.map((regionIndex) => projectLocalPoint(regionObjects[regionIndex].position));
+      const awsPoint = projectedNodes.get("aws");
+      const routePoints = waveRouteIndices.map((regionIndex) => projectLocalPoint(regionObjects[regionIndex].position, stageRect));
       const routeStarts = [awsPoint, routePoints[0], routePoints[1]];
       deploymentPaths.forEach((path, index) => {
         const start = routeStarts[index];

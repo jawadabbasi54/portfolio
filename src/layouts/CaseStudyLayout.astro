@@ -1,0 +1,48 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  slug: string;
+  eyebrow: string;
+  heading: string;
+  intro: string;
+  tags: string[];
+}
+
+const { title, description, slug, eyebrow, heading, intro, tags } = Astro.props;
+const canonical = `https://jawadabbasi.com/case-studies/${slug}`;
+---
+
+<BaseLayout title={title} description={description} canonical={canonical} pageType="article" keywords={tags}>
+  <canvas class="spider-web-background" id="spider-web-background" aria-hidden="true"></canvas>
+  <div class="page-noise" aria-hidden="true"></div>
+  <SiteHeader />
+
+  <main class="case-page">
+    <header class="case-hero section-shell">
+      <a class="case-breadcrumb" href="/#work">← All case studies</a>
+      <p>{eyebrow}</p>
+      <h1>{heading}</h1>
+      <p class="case-intro">{intro}</p>
+      <div class="case-tag-list">{tags.map((tag) => <span>{tag}</span>)}</div>
+    </header>
+
+    <article class="case-article section-shell">
+      <slot />
+    </article>
+
+    <aside class="case-next section-shell glass-panel">
+      <div><p>NEED RELIABLE CLOUD DELIVERY?</p><h2>Let’s discuss infrastructure, automation, or production reliability.</h2></div>
+      <div class="case-next-actions">
+        <a class="button button-primary" href="mailto:jawadabbasi54@gmail.com">Start a conversation <span>→</span></a>
+        <a class="button button-secondary" href="/Jawad_Abbasi_Resume.pdf" download>Download résumé</a>
+      </div>
+    </aside>
+  </main>
+
+  <SiteFooter />
+</BaseLayout>

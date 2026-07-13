@@ -126,10 +126,14 @@ img, canvas { display: block; }
 }
 .hero-eyebrow span { width: 5px; height: 5px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 10px var(--orange); animation: pulse 1.8s ease-in-out infinite; }
 .hero-name { margin: 0 0 15px; font-size: clamp(54px, 5.3vw, 96px); line-height: .92; font-weight: 800; letter-spacing: -.055em; color: #fff; text-shadow: 0 8px 34px rgba(0,0,0,.25); }
+.hero-role { margin: -4px 0 18px; color: #8fc4ff; font-size: 12px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+.hero-role span { margin: 0 5px; color: var(--orange); }
 .hero h1 { margin: 0; max-width: 590px; font-size: clamp(46px, 4.1vw, 74px); line-height: 1.03; font-weight: 720; letter-spacing: -.045em; }
 .hero h1 span { color: transparent; background: linear-gradient(105deg, #39a4ff 0%, #377eff 31%, #e4d9ab 60%, #ff8b1f 100%); -webkit-background-clip: text; background-clip: text; }
 .hero-lead { max-width: 530px; margin: 26px 0 0; color: var(--muted); font-size: 18px; line-height: 1.7; }
-.hero-actions { display: flex; gap: 14px; margin-top: 30px; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+.hero-resume-link { width: 100%; margin-top: 2px; color: #9fc5f3; font-size: 12px; font-weight: 750; white-space: nowrap; transition: color .2s ease, transform .2s ease; }
+.hero-resume-link:hover { color: #fff; transform: translateY(-1px); }
 .button { min-height: 52px; padding: 0 22px; display: inline-flex; align-items: center; justify-content: center; gap: 24px; border-radius: 11px; font-size: 14px; font-weight: 700; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
 .button:hover { transform: translateY(-2px); }
 .button-primary { color: white; border: 1px solid #5dc8ff; background: linear-gradient(110deg, #126dff, #2ba0ff); box-shadow: 0 0 24px rgba(44, 131, 255, .28), inset 0 0 14px rgba(255,255,255,.13); }
@@ -170,6 +174,7 @@ img, canvas { display: block; }
     radial-gradient(circle at 54% 46%, transparent 0 50%, rgba(2, 6, 16, .24) 75%, rgba(2, 5, 13, .74) 100%);
 }
 .prototype-fallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 72% 50%; opacity: .96; transition: opacity .45s ease, visibility .45s ease; filter: contrast(1.06) saturate(1.08); }
+.prototype-fallback:not([src]) { opacity: 0; visibility: hidden; }
 .globe-stage.scene-ready .prototype-fallback { opacity: 0; visibility: hidden; }
 .globe-stage.scene-failed .prototype-fallback { opacity: .96; visibility: visible; }
 #globe-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; opacity: 0; transition: opacity 1s ease; cursor: grab; touch-action: none; }
@@ -269,6 +274,8 @@ img, canvas { display: block; }
 .contact-panel h2 { max-width: 850px; font-size: clamp(30px, 3.6vw, 54px); }
 .contact-actions { display: flex; flex-direction: column; gap: 12px; }
 .site-footer { min-height: 90px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(91, 139, 213, .18); color: #7f8fa7; font-size: 12px; }
+.footer-links { display: flex; align-items: center; gap: 24px; }
+.footer-links a:hover { color: #dbe9ff; }
 
 .reveal { opacity: 1; transform: none; transition: opacity .65s ease, transform .65s cubic-bezier(.2,.7,.2,1); }
 .reveal.is-visible { opacity: 1; transform: none; }
@@ -380,7 +387,7 @@ img, canvas { display: block; }
   .visual-column { min-height: 680px; }
 }
 
-/* ========================================================================== 
+/* ==========================================================================
    GSAP DevSecOps overlay
    Crisp DOM/SVG nodes are projected over the existing Three.js globe. The
    globe renderer, drag controls and crystal materials remain independent.
@@ -692,7 +699,7 @@ img, canvas { display: block; }
   filter: drop-shadow(0 0 7px rgba(255, 153, 0, .45));
 }
 
-/* ========================================================================== 
+/* ==========================================================================
    Targeted lifecycle-loop refinement
    Only the requested AWS sizing, feedback loop, readability and layer controls
    are changed below. Existing globe materials, layout and navigation remain.
@@ -1608,6 +1615,122 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .spider-web-background { opacity: .34; }
 }
+
+/* ==========================================================================
+   Case studies, résumé and conversion content
+   ========================================================================== */
+.study-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 22px;
+}
+.study-card { min-height: 360px; display: flex; flex-direction: column; padding: 28px; overflow: hidden; }
+.study-card::after { z-index: -1; }
+.study-card-top { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.study-card-top > span { color: #4aa4ff; font: 800 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.study-card-top small { color: #ffb263; font-size: 10px; font-weight: 800; letter-spacing: .16em; }
+.study-card h3 { margin: 52px 0 14px; max-width: 560px; font-size: clamp(25px, 2.5vw, 38px); line-height: 1.08; letter-spacing: -.035em; }
+.study-card > p { max-width: 620px; margin: 0; color: #a6b5ca; font-size: 14px; line-height: 1.7; }
+.study-card-tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 22px 0; }
+.study-card-tags span, .case-tag-list span {
+  padding: 7px 10px;
+  border: 1px solid rgba(82, 148, 245, .24);
+  border-radius: 999px;
+  color: #aecdF5;
+  background: rgba(21, 60, 120, .22);
+  font-size: 10px;
+}
+.study-card > a { width: max-content; margin-top: auto; color: #78bcff; font-size: 13px; font-weight: 800; }
+.study-card > a span { display: inline-block; margin-left: 8px; transition: transform .2s ease; }
+.study-card > a:hover span { transform: translateX(4px); }
+
+.resume-panel { display: grid; grid-template-columns: 1.25fr .75fr; gap: 50px; padding: clamp(30px, 5vw, 70px); }
+.resume-heading > p:first-child { margin: 0 0 12px; color: #72a8ff; font-size: 10px; font-weight: 800; letter-spacing: .22em; }
+.resume-heading h2 { margin: 0; max-width: 850px; font-size: clamp(34px, 4vw, 58px); line-height: 1.08; letter-spacing: -.04em; }
+.resume-heading > p:last-child { max-width: 760px; margin: 24px 0 0; color: #a9b7ca; font-size: 16px; line-height: 1.75; }
+.resume-summary { display: grid; gap: 16px; align-content: center; }
+.resume-summary > div { padding: 18px; border: 1px solid rgba(80, 145, 239, .2); border-radius: 14px; background: rgba(8, 22, 49, .62); }
+.resume-summary span, .resume-summary strong, .resume-summary small { display: block; }
+.resume-summary > div > span { color: #67a6ff; font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+.resume-summary strong { margin-top: 7px; color: #f7f9ff; font-size: 18px; }
+.resume-summary small { margin-top: 4px; color: #9cabc0; font-size: 11px; }
+.resume-summary .button { margin-top: 4px; }
+
+.case-page { padding-bottom: 90px; }
+.case-hero { max-width: 1280px; padding: clamp(70px, 10vw, 140px) 0 clamp(60px, 8vw, 110px); }
+.case-breadcrumb { display: inline-flex; margin-bottom: 45px; color: #89bfff; font-size: 12px; font-weight: 750; }
+.case-hero > p:not(.case-intro) { margin: 0 0 16px; color: #ffb25c; font-size: 11px; font-weight: 850; letter-spacing: .2em; }
+.case-hero h1 { max-width: 1120px; margin: 0; font-size: clamp(48px, 7vw, 96px); line-height: .98; letter-spacing: -.055em; }
+.case-intro { max-width: 900px; margin: 30px 0 0; color: #afbdd0; font-size: clamp(18px, 2vw, 24px); line-height: 1.65; }
+.case-tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+.case-article { max-width: 1280px; display: grid; gap: 28px; }
+.case-article > section { padding: clamp(30px, 5vw, 68px); border: 1px solid rgba(72, 137, 231, .18); border-radius: 24px; background: linear-gradient(145deg, rgba(8, 22, 50, .72), rgba(3, 9, 23, .54)); }
+.case-section-label { margin: 0 0 14px !important; color: #65a9ff !important; font-size: 10px !important; font-weight: 850; letter-spacing: .22em; }
+.case-article h2 { max-width: 960px; margin: 0 0 22px; font-size: clamp(30px, 4vw, 54px); line-height: 1.08; letter-spacing: -.04em; }
+.case-article section > p:not(.case-section-label), .case-two-column > div > p { max-width: 920px; margin: 14px 0 0; color: #aab8cc; font-size: 16px; line-height: 1.8; }
+.case-two-column { display: grid; grid-template-columns: .85fr 1.15fr; gap: 60px; align-items: start; }
+.case-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 30px; }
+.case-detail-grid article { padding: 24px; border: 1px solid rgba(76, 142, 234, .18); border-radius: 16px; background: rgba(7, 20, 46, .62); }
+.case-detail-grid article > span, .case-process article > span { color: #ff9c36; font: 800 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.case-detail-grid h3, .case-process h3 { margin: 20px 0 10px; font-size: 20px; }
+.case-detail-grid p, .case-process p { margin: 0; color: #9eadc2; font-size: 14px; line-height: 1.7; }
+.case-process { display: grid; margin-top: 28px; }
+.case-process article { display: grid; grid-template-columns: 46px 1fr; gap: 22px; padding: 24px 0; border-top: 1px solid rgba(75, 135, 222, .18); }
+.case-process article:last-child { border-bottom: 1px solid rgba(75, 135, 222, .18); }
+.case-process h3 { margin-top: 0; }
+.case-result { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 18px; }
+.case-result > .case-section-label, .case-result > h2, .case-result > p { width: 100%; }
+.case-result > div { min-width: 190px; padding: 20px; border: 1px solid rgba(255, 149, 45, .2); border-radius: 14px; background: rgba(29, 16, 8, .38); }
+.case-result strong, .case-result span { display: block; }
+.case-result strong { font-size: 32px; }
+.case-result span { margin-top: 4px; color: #adbacb; font-size: 11px; }
+.case-next { max-width: 1280px; display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: end; margin-top: 28px; padding: clamp(30px, 5vw, 58px); }
+.case-next p { margin: 0 0 10px; color: #ffb25c; font-size: 10px; font-weight: 850; letter-spacing: .2em; }
+.case-next h2 { max-width: 760px; margin: 0; font-size: clamp(28px, 3.4vw, 46px); line-height: 1.1; }
+.case-next-actions { display: flex; gap: 10px; }
+
+@media (max-width: 980px) {
+  .main-nav { gap: 22px; }
+  .study-grid, .resume-panel, .case-two-column, .case-next { grid-template-columns: 1fr; }
+  .resume-panel, .case-two-column { gap: 30px; }
+  .case-next-actions { flex-wrap: wrap; }
+}
+
+@media (max-width: 680px) {
+  .hero-role { font-size: 11px; line-height: 1.5; }
+  .hero-actions { flex-wrap: wrap; }
+  .hero-resume-link { width: 100%; padding: 5px 0; text-align: center; font-size: 12px; }
+  .hero-eyebrow, .hero-stats span { font-size: 11px; }
+  .study-grid, .case-detail-grid { grid-template-columns: 1fr; }
+  .study-card { min-height: 330px; padding: 23px; }
+  .study-card h3 { margin-top: 42px; }
+  .resume-panel { padding: 24px; }
+  .case-hero { padding-top: 56px; }
+  .case-breadcrumb { margin-bottom: 32px; }
+  .case-hero h1 { font-size: clamp(43px, 13vw, 62px); }
+  .case-article > section { padding: 24px; border-radius: 18px; }
+  .case-article section > p:not(.case-section-label), .case-two-column > div > p { font-size: 15px; }
+  .case-process article { grid-template-columns: 34px 1fr; gap: 12px; }
+  .case-next-actions { display: grid; }
+  .case-next-actions .button { width: 100%; }
+  .footer-links { gap: 14px; }
+
+  /* Prefer readable labels over crowded microcopy on the compact globe. */
+  .typing-console { display: none; }
+  .component-caption strong { font-size: 12px; }
+  .component-caption span { display: none; }
+  .component-caption { min-width: 102px; }
+  .component-caption-aws strong { font-size: 12px; }
+  .flow-layer-controls button { min-height: 44px; font-size: 11px; }
+  .region-compact-label strong { font-size: 10px; }
+}
+
+.not-found { min-height: calc(100svh - 166px); display: flex; flex-direction: column; justify-content: center; padding: 80px 0; }
+.not-found > p:first-child { margin: 0 0 15px; color: #ffad52; font-size: 11px; font-weight: 850; letter-spacing: .2em; }
+.not-found h1 { max-width: 950px; margin: 0; font-size: clamp(52px, 8vw, 110px); line-height: .96; letter-spacing: -.06em; }
+.not-found > p:not(:first-child) { max-width: 720px; margin: 28px 0 0; color: #aab8cc; font-size: 17px; line-height: 1.75; }
+.not-found > div { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
 
 /* --------------------------------------------------------------------------
    Cinematic globe polish — motion and depth only, no layout redesign

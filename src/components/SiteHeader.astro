@@ -1,0 +1,20 @@
+---
+interface Props { home?: boolean; }
+const { home = false } = Astro.props;
+const sectionHref = (id: string) => home ? `#${id}` : `/#${id}`;
+---
+
+<header class="site-header" id="top">
+  <a class="brand" href="/">
+    <span class="brand-orb" aria-hidden="true">JA</span>
+    <span class="brand-copy"><strong>Jawad Abbasi</strong><small>DEVOPS / CLOUD</small></span>
+  </a>
+  <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="primary-navigation" aria-expanded="false"><span></span><span></span></button>
+  <nav class="main-nav" id="primary-navigation" aria-label="Primary navigation">
+    <a href={sectionHref("expertise")}>Expertise</a>
+    <a href={sectionHref("work")}>Case studies</a>
+    <a href={sectionHref("experience")}>Experience</a>
+    <a href={sectionHref("resume")}>Résumé</a>
+    <a class="nav-cta" href={sectionHref("contact")}>Let’s connect</a>
+  </nav>
+</header>

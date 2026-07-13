@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-07-14 — Portfolio content, performance, and quality pass
+
+- Added four résumé-backed case-study routes with shared Astro components, article metadata, structured data, outcomes, responsibilities, and architecture narratives.
+- Added the downloadable PDF résumé, a focused résumé section, stronger calls to action, clearer role/location signals, and refined mobile/desktop presentation.
+- Added an adaptive page bootstrap that defers Three.js and GSAP without hiding crawlable content or blocking normal navigation.
+- Added device-aware WebP globe texture tiers and a low-cost static constellation mode for mobile, coarse-pointer, low-memory, and Save-Data visitors.
+- Batched globe projection layout reads and kept all SVG routes anchored to projected surface points.
+- Added a branded no-index 404 page, web app manifest, touch icons, article Open Graph data, and a sitemap filter for non-content routes.
+- Added Playwright coverage, generated-build assertions, a Lighthouse performance budget, and a GitHub Actions quality workflow.
+- Added security and cache headers, including a report-only Content Security Policy for safe production observation.
+
 ## 2026-07-14 — Rotation-safe globe flow anchoring
 
 - Added a perspective-correct SVG clip derived from the camera-to-globe tangent boundary.

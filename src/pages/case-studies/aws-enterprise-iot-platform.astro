@@ -1,0 +1,44 @@
+---
+import CaseStudyLayout from "../../layouts/CaseStudyLayout.astro";
+---
+
+<CaseStudyLayout
+  title="Enterprise AWS IoT Platform Case Study | Jawad Abbasi"
+  description="How Jawad Abbasi supports multi-environment AWS infrastructure and IoT telemetry delivery for an enterprise renewable-energy platform."
+  slug="aws-enterprise-iot-platform"
+  eyebrow="AWS · ENTERPRISE IOT · RENEWABLE ENERGY"
+  heading="Operating a scalable AWS platform for renewable-energy IoT."
+  intro="A production cloud foundation supporting web applications, backend services, connected-field telemetry, and delivery workflows across Development, QA, Staging, and Production."
+  tags={["AWS", "IoT Core", "Lambda", "Aurora PostgreSQL", "CloudFront", "Elastic Beanstalk"]}
+>
+  <section>
+    <p class="case-section-label">CONTEXT</p>
+    <h2>A platform spanning applications, infrastructure, and field telemetry.</h2>
+    <p>TerraSmart delivers renewable-energy technology and IoT-enabled project optimization software. The platform requires dependable cloud environments for React and Node.js applications while also receiving telemetry from network controllers in the field.</p>
+    <p>My role covers the infrastructure and operational path around those workloads: environment design, application delivery, telemetry processing, security controls, observability, and production troubleshooting.</p>
+  </section>
+
+  <section class="case-two-column">
+    <div><p class="case-section-label">CHALLENGE</p><h2>Keep four environments consistent without slowing delivery.</h2></div>
+    <div><p>Development speed and production reliability pull in different directions when environments are configured manually. Application services, networking, secrets, databases, edge delivery, and IoT integrations need repeatable boundaries while teams continue releasing changes.</p></div>
+  </section>
+
+  <section>
+    <p class="case-section-label">APPROACH</p>
+    <h2>A layered AWS architecture with automation at every handoff.</h2>
+    <div class="case-detail-grid">
+      <article><span>01</span><h3>Application delivery</h3><p>React.js and Node.js workloads are delivered through managed AWS services including Elastic Beanstalk, CloudFront, API Gateway, and supporting networking components.</p></article>
+      <article><span>02</span><h3>Telemetry pipeline</h3><p>AWS Lambda processes controller telemetry integrated through AWS IoT Core and persists application data in Amazon Aurora PostgreSQL.</p></article>
+      <article><span>03</span><h3>Environment isolation</h3><p>Development, QA, Staging, and Production retain clear configuration and release boundaries while sharing repeatable infrastructure patterns.</p></article>
+      <article><span>04</span><h3>Operational visibility</h3><p>CloudWatch dashboards, alarms, centralized Slack notifications, runbooks, and incident response create a direct path from signal to action.</p></article>
+    </div>
+  </section>
+
+  <section class="case-result glass-panel">
+    <p class="case-section-label">SCALE SUPPORTED</p>
+    <div><strong>19 GW</strong><span>solar portfolio supported</span></div>
+    <div><strong>4,600+</strong><span>PV systems represented in the platform</span></div>
+    <div><strong>4</strong><span>delivery environments</span></div>
+    <p>The engineering outcome is a repeatable operational foundation for application releases, connected-device data, and high-availability production support.</p>
+  </section>
+</CaseStudyLayout>

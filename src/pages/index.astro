@@ -1,5 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import CaseStudyCard from "../components/CaseStudyCard.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
 
 const title = "Jawad Abbasi | Senior DevOps Engineer";
 const description = "Jawad Abbasi — Senior DevOps Engineer specializing in AWS, Terraform, CI/CD, DevSecOps, observability, and enterprise IoT platforms.";
@@ -11,20 +14,7 @@ const description = "Jawad Abbasi — Senior DevOps Engineer specializing in AWS
   <div class="ambient ambient-one" aria-hidden="true"></div>
   <div class="ambient ambient-two" aria-hidden="true"></div>
 
-  <header class="site-header" id="top">
-    <a class="brand" href="#top" aria-label="Jawad Abbasi home">
-      <span class="brand-orb">JA</span>
-      <span class="brand-copy"><strong>Jawad Abbasi</strong><small>DEVOPS / CLOUD</small></span>
-    </a>
-    <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span></button>
-    <nav class="main-nav" aria-label="Primary navigation">
-      <a href="#expertise">Expertise</a>
-      <a href="#work">Work</a>
-      <a href="#experience">Experience</a>
-      <a href="#about">About</a>
-      <a class="nav-cta" href="#contact">Let’s connect</a>
-    </nav>
-  </header>
+  <SiteHeader home />
 
   <a class="page-scroll-rail" href="#expertise" aria-label="Scroll through the portfolio">
     <span class="page-scroll-track" aria-hidden="true"><span class="page-scroll-progress"></span></span>
@@ -39,23 +29,26 @@ const description = "Jawad Abbasi — Senior DevOps Engineer specializing in AWS
       <div class="hero-copy">
         <p class="hero-eyebrow reveal"><span></span>I engineer reliable cloud systems</p>
         <p class="hero-name reveal">Jawad Abbasi</p>
+        <p class="hero-role reveal">Senior DevOps Engineer <span>·</span> Islamabad, Pakistan</p>
         <h1 id="hero-title" class="reveal">End-to-end DevOps.<br />Built for scale.<br />Engineered for <span>reliability.</span></h1>
         <p class="hero-lead reveal">From code to cloud and beyond—secure, automated, observable delivery pipelines on AWS for enterprise-scale cloud and IoT platforms.</p>
         <div class="hero-actions reveal">
           <a class="button button-primary" href="#work">Explore my work <span>→</span></a>
           <a class="button button-secondary" href="mailto:jawadabbasi54@gmail.com">Start a conversation</a>
+          <a class="hero-resume-link" href="/Jawad_Abbasi_Resume.pdf" download>Download résumé ↓</a>
         </div>
         <div class="hero-stats reveal" aria-label="Professional highlights">
-          <article><strong>7+</strong><span>Years<br />experience</span></article>
-          <article><strong>4+</strong><span>Cloud<br />environments</span></article>
+          <article><strong>7</strong><span>Years<br />experience</span></article>
+          <article><strong>4</strong><span>Cloud<br />environments</span></article>
           <article><strong>19</strong><span>GW solar<br />supported</span></article>
-          <article><strong>4,600+</strong><span>PV systems<br />in platform</span></article>
+          <article><strong>4,600</strong><span>PV systems<br />in platform</span></article>
         </div>
-        <div class="trusted reveal"><span>TRUSTED CLOUD</span><strong>aws</strong></div>
+        <div class="trusted reveal"><span>PRIMARY CLOUD</span><strong>aws</strong></div>
       </div>
 
       <div class="visual-column reveal">
-        <div class="globe-stage" id="globe-stage" aria-label="Interactive rotatable DevOps lifecycle globe">
+        <div class="globe-stage" id="globe-stage" role="region" aria-label="Interactive rotatable DevOps lifecycle globe">
+          <img class="prototype-fallback" id="prototype-fallback" data-src="/assets/prototype-fallback.png" alt="Static DevOps lifecycle command center" />
           <canvas id="globe-canvas" aria-hidden="true"></canvas>
           <div class="glass-reflection" aria-hidden="true"></div>
           <div class="scene-loader" id="scene-loader" aria-live="polite">
@@ -64,9 +57,9 @@ const description = "Jawad Abbasi — Senior DevOps Engineer specializing in AWS
           </div>
           <div class="scene-error" id="scene-error" hidden>
             <strong>Interactive mode unavailable</strong>
-            <span>The premium static command center remains fully visible.</span>
+            <span>A static command center is shown instead.</span>
           </div>
-          <div class="globe-ui-layer" id="globe-ui-layer" aria-label="Animated DevSecOps delivery flow">
+          <div class="globe-ui-layer" id="globe-ui-layer" role="group" aria-label="Animated DevSecOps delivery flow">
             <svg class="pipeline-overlay" id="pipeline-overlay" aria-hidden="true">
               <defs>
                 <linearGradient id="code-gradient" x1="0" y1="0" x2="1" y2="0">
@@ -183,7 +176,7 @@ const description = "Jawad Abbasi — Senior DevOps Engineer specializing in AWS
               <div class="component-tooltip" role="tooltip">Alarms notify Slack, phone, and email, then return actionable feedback to the developer.</div>
             </div>
 
-            <div class="region-overlay-layer" id="region-overlay-layer" data-layers="deployment" aria-label="AWS deployment regions"></div>
+            <div class="region-overlay-layer" id="region-overlay-layer" role="group" data-layers="deployment" aria-label="AWS deployment regions"></div>
 
             <div class="deployment-wave-pulse" id="deployment-wave-pulse" data-layers="deployment" aria-hidden="true"></div>
 
@@ -227,6 +220,12 @@ const description = "Jawad Abbasi — Senior DevOps Engineer specializing in AWS
         <div class="case-copy"><span class="case-label">USA · ENTERPRISE IOT · SOLAR</span><h3>Operating cloud infrastructure for a large-scale solar technology platform.</h3><p>Designed and managed AWS infrastructure supporting React applications, Node.js services, Elastic Beanstalk, Lambda telemetry processing, Aurora PostgreSQL, AWS IoT Core, and multi-environment delivery workflows.</p><div class="case-points"><span>Terraform IaC</span><span>Bitbucket CI/CD</span><span>AWS IoT</span><span>CloudWatch</span><span>DevSecOps</span><span>Production support</span></div></div>
         <div class="case-metrics"><div><strong>19 GW</strong><span>solar supported</span></div><div><strong>4,600+</strong><span>PV systems</span></div><div><strong>4</strong><span>delivery environments</span></div><div><strong>24/7</strong><span>operational focus</span></div></div>
       </article>
+      <div class="study-grid">
+        <CaseStudyCard href="/case-studies/aws-enterprise-iot-platform" number="01" label="AWS + IOT" title="Enterprise renewable-energy cloud platform" description="Multi-environment AWS architecture connecting web applications, telemetry processing, managed data, and production operations." tags={["AWS", "IoT Core", "Lambda", "Aurora"]} />
+        <CaseStudyCard href="/case-studies/terraform-multi-environment-infrastructure" number="02" label="INFRASTRUCTURE AS CODE" title="Repeatable Terraform environments" description="Reviewed infrastructure workflows for consistent Development, QA, Staging, and Production cloud foundations." tags={["Terraform", "IaC", "IAM", "Networking"]} />
+        <CaseStudyCard href="/case-studies/secure-cicd-automation" number="03" label="DEVSECOPS" title="Secure CI/CD automation" description="Jenkins and Bitbucket delivery with self-hosted runners, OIDC access, security gates, containers, and AWS releases." tags={["Jenkins", "Bitbucket", "OIDC", "Snyk"]} />
+        <CaseStudyCard href="/case-studies/observability-incident-response" number="04" label="RELIABILITY" title="Observability and incident response" description="CloudWatch dashboards, centralized Slack signals, production troubleshooting, RCA, and operational feedback." tags={["CloudWatch", "Slack", "RCA", "Runbooks"]} />
+      </div>
     </section>
 
     <section class="experience experience-crystal section-shell section-block" id="experience">
@@ -235,15 +234,15 @@ const description = "Jawad Abbasi — Senior DevOps Engineer specializing in AWS
       <div class="timeline crystal-timeline">
         <span class="timeline-progress" aria-hidden="true"></span>
         <article class="timeline-item crystal-experience-card reveal" data-experience="01">
-          <div class="timeline-meta"><span class="timeline-orb"></span><time>2019 — PRESENT</time><small>07+ YEARS</small></div>
+          <div class="timeline-meta"><span class="timeline-orb"></span><time datetime="2019-01">2019 — PRESENT</time><small>07+ YEARS</small></div>
           <div class="timeline-content"><span class="experience-number">01</span><h3>Senior DevOps Engineer</h3><h4>Zigron Technologies · Client: TerraSmart</h4><p>AWS architecture, Terraform, CI/CD, cloud security, observability, AWS IoT, incident response, Linux automation, Docker, and production delivery.</p><div class="experience-tags"><span>AWS</span><span>Terraform</span><span>DevSecOps</span><span>IoT</span></div></div>
         </article>
         <article class="timeline-item crystal-experience-card reveal" data-experience="02">
-          <div class="timeline-meta"><span class="timeline-orb"></span><time>2018 — 2019</time><small>FOUNDATION</small></div>
+          <div class="timeline-meta"><span class="timeline-orb"></span><time datetime="2018-10">2018 — 2019</time><small>FOUNDATION</small></div>
           <div class="timeline-content"><span class="experience-number">02</span><h3>DevOps Intern</h3><h4>Zigron Technologies</h4><p>Linux administration, Docker, AWS infrastructure support, deployment automation, monitoring, and CI/CD foundations.</p><div class="experience-tags"><span>Linux</span><span>Docker</span><span>CI/CD</span></div></div>
         </article>
         <article class="timeline-item crystal-experience-card reveal" data-experience="03">
-          <div class="timeline-meta"><span class="timeline-orb"></span><time>2017</time><small>NETWORKS</small></div>
+          <div class="timeline-meta"><span class="timeline-orb"></span><time datetime="2017-07">2017</time><small>NETWORKS</small></div>
           <div class="timeline-content"><span class="experience-number">03</span><h3>Network Administrator Intern</h3><h4>Pakistan Television Headquarters</h4><p>LAN operations, network troubleshooting, device configuration, system administration, and infrastructure support.</p><div class="experience-tags"><span>Networking</span><span>Operations</span><span>Support</span></div></div>
         </article>
       </div>
@@ -253,14 +252,25 @@ const description = "Jawad Abbasi — Senior DevOps Engineer specializing in AWS
       <div class="about-grid"><div class="section-heading reveal"><p>ABOUT</p><h2>Automation first. Security by design. Reliability as the outcome.</h2></div><div class="about-copy reveal"><p>I build systems that make delivery safer and operations calmer: clear infrastructure code, automated pipelines, least-privilege access, useful observability, and fast alerting paths.</p><p>My work spans AWS, Terraform, Git, Bitbucket, Jenkins, Docker, Linux, Bash, Python, CloudWatch, Route 53, CloudFront, API Gateway, IAM, WAF, GuardDuty, Secrets Manager, Aurora PostgreSQL, AWS Lambda, and IoT Core.</p></div></div>
     </section>
 
+    <section class="resume section-shell section-block" id="resume">
+      <div class="resume-panel glass-panel reveal">
+        <div class="resume-heading"><p>RÉSUMÉ</p><h2>Seven years across cloud automation, delivery, and production operations.</h2><p>Senior DevOps Engineer based in Islamabad, Pakistan, with a BS in Computer Science and hands-on experience supporting enterprise AWS and renewable-energy IoT platforms.</p></div>
+        <div class="resume-summary">
+          <div><span>2019 — PRESENT</span><strong>Senior DevOps Engineer</strong><small>Zigron Technologies · TerraSmart</small></div>
+          <div><span>2014 — 2018</span><strong>BS Computer Science</strong><small>Capital University of Science & Technology</small></div>
+          <a class="button button-primary" href="/Jawad_Abbasi_Resume.pdf" download>Download résumé <span>↓</span></a>
+        </div>
+      </div>
+    </section>
+
     <section class="contact section-shell section-block" id="contact">
       <div class="contact-panel glass-panel reveal"><div><p>LET’S BUILD RELIABLE SYSTEMS</p><h2>Need cloud infrastructure, delivery automation, or production reliability expertise?</h2></div><div class="contact-actions">
           <a class="button button-primary contact-link" href="mailto:jawadabbasi54@gmail.com"><span class="contact-link-icon">@</span><span>jawadabbasi54@gmail.com</span><i>→</i></a>
-          <a class="button button-secondary contact-link" href="https://linkedin.com/in/jawad-abbasi-573772117" target="_blank" rel="noreferrer"><span class="contact-link-icon">in</span><span>LinkedIn profile</span><i>→</i></a>
+          <a class="button button-secondary contact-link" href="https://linkedin.com/in/jawad-abbasi-573772117" target="_blank" rel="noopener noreferrer"><span class="contact-link-icon">in</span><span>LinkedIn profile</span><i>→</i></a>
           <a class="button button-secondary contact-link" href="tel:+923325501123"><span class="contact-link-icon">☎</span><span>+92 332 5501123</span><i>→</i></a>
         </div></div>
     </section>
   </main>
 
-  <footer class="site-footer section-shell"><span>© <span id="year"></span> Jawad Abbasi</span><a href="#top">Back to top ↑</a></footer>
+  <SiteFooter />
 </BaseLayout>

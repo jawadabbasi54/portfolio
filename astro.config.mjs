@@ -4,7 +4,9 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
   site: "https://jawadabbasi.com",
   output: "static",
-  integrations: [sitemap()],
+  integrations: [sitemap({
+    filter: (page) => page !== "https://jawadabbasi.com/404/",
+  })],
   build: {
     inlineStylesheets: "auto",
   },

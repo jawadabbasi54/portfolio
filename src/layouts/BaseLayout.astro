@@ -5,35 +5,64 @@ interface Props {
   title: string;
   description: string;
   canonical?: string;
+  pageType?: "profile" | "article" | "webpage";
+  keywords?: string[];
+  noIndex?: boolean;
 }
 
 const {
   title,
   description,
   canonical = "https://jawadabbasi.com",
+  pageType = "profile",
+  keywords = [],
+  noIndex = false,
 } = Astro.props;
 
+const siteRoot = "https://jawadabbasi.com";
 const socialImage = new URL("/assets/og-cover.png", canonical).toString();
-const personId = `${canonical}#person`;
-const websiteId = `${canonical}#website`;
+const personId = `${siteRoot}#person`;
+const websiteId = `${siteRoot}#website`;
+const pageEntity = pageType === "profile" ? {
+  "@type": "ProfilePage",
+  "@id": canonical,
+  url: canonical,
+  name: title,
+  description,
+  isPartOf: { "@id": websiteId },
+  mainEntity: { "@id": personId },
+  primaryImageOfPage: {
+    "@type": "ImageObject",
+    url: socialImage,
+    width: 1200,
+    height: 630,
+  },
+} : pageType === "article" ? {
+  "@type": "TechArticle",
+  "@id": `${canonical}#article`,
+  url: canonical,
+  headline: title,
+  description,
+  image: socialImage,
+  author: { "@id": personId },
+  publisher: { "@id": personId },
+  isPartOf: { "@id": websiteId },
+  mainEntityOfPage: canonical,
+  keywords,
+  inLanguage: "en",
+} : {
+  "@type": "WebPage",
+  "@id": canonical,
+  url: canonical,
+  name: title,
+  description,
+  isPartOf: { "@id": websiteId },
+  inLanguage: "en",
+};
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
-    {
-      "@type": "ProfilePage",
-      "@id": canonical,
-      url: canonical,
-      name: title,
-      description,
-      isPartOf: { "@id": websiteId },
-      mainEntity: { "@id": personId },
-      primaryImageOfPage: {
-        "@type": "ImageObject",
-        url: socialImage,
-        width: 1200,
-        height: 630,
-      },
-    },
+    pageEntity,
     {
       "@type": "WebSite",
       "@id": websiteId,
@@ -75,13 +104,12 @@ const structuredData = {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#030817" />
     <meta name="description" content={description} />
-    <meta name="keywords" content="Jawad Abbasi, DevOps Engineer, AWS, Terraform, CI/CD, CloudWatch, Bitbucket, Docker, Jenkins, DevSecOps" />
     <meta name="author" content="Jawad Abbasi" />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="robots" content={noIndex ? "noindex, nofollow" : "index, follow, max-image-preview:large"} />
 
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={pageType === "article" ? "article" : "website"} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={socialImage} />
     <meta property="og:image:secure_url" content={socialImage} />
@@ -100,6 +128,8 @@ const structuredData = {
 
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/assets/favicon.svg?v=20260711-3" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
     <title>{title}</title>
@@ -109,11 +139,7 @@ const structuredData = {
   <body>
     <slot />
 
-    <!-- Keep these deferred scripts in dependency order; the globe expects their browser globals. -->
-    <script is:inline src="/spider-web.js?v=20260712-web2-optimized" defer></script>
-    <script is:inline src="/vendor/gsap.min.js?v=20260712-regions1" defer></script>
-    <script is:inline src="/vendor/ScrollTrigger.min.js?v=20260712-regions1" defer></script>
-    <script is:inline src="/vendor/three.min.js?v=20260712-regions1" defer></script>
-    <script is:inline src="/script.js?v=20260714-surfaceclip1" defer></script>
+    <script is:inline src="/page-loader.js?v=20260714-adaptive2" defer></script>
+    <script is:inline src="/spider-web.js?v=20260714-adaptive2" defer></script>
   </body>
 </html>
