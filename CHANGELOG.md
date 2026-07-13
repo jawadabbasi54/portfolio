@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-07-14 — Embedded region artifact removal
+
+- Removed the redundant procedural AWS-region texture whose amplified starburst shapes appeared as white crosses and rectangles on desktop and mobile GPUs.
+- Retained the proper projected AWS pins, labels, deployment ripples, and city-light texture while eliminating one texture request.
+- Removed both GitHub Actions workflows so Vercel remains the sole push-triggered external service; local quality and browser-test commands remain available.
+- Updated runtime cache keys so production browsers receive the corrected globe shader immediately.
+
 ## 2026-07-14 — City-light hotspot correction
 
 - Replaced hard per-channel clipping in the globe city-light shader with smooth luminance highlight compression.

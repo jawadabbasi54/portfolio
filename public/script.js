@@ -818,33 +818,29 @@
       lightMask: "/assets/textures/earth_lights_4096.png?v=20260712-sharp1",
       normal: "/assets/textures/earth_normal_2048.png?v=20260712-sharp1",
       specular: "/assets/textures/earth_specular_2048.png?v=20260712-sharp1",
-      roughness: "/assets/textures/earth_roughness_2048.png?v=20260712-sharp1",
-      regions: "/assets/textures/aws_region_embedded_4096.png?v=20260712-regionembed1"
+      roughness: "/assets/textures/earth_roughness_2048.png?v=20260712-sharp1"
     } : quality === "medium" ? {
       surface: "/assets/textures/earth_surface_2048.webp?v=20260714-adaptive1",
       lights: "/assets/textures/earth_lights_points_2048.webp?v=20260714-adaptive1",
       lightMask: "/assets/textures/earth_lights_1024.webp?v=20260714-adaptive1",
       normal: "/assets/textures/earth_normal_1024.webp?v=20260714-adaptive1",
       specular: "/assets/textures/earth_specular_1024.webp?v=20260714-adaptive1",
-      roughness: "/assets/textures/earth_roughness_1024.webp?v=20260714-adaptive1",
-      regions: "/assets/textures/aws_region_embedded_2048.webp?v=20260714-adaptive1"
+      roughness: "/assets/textures/earth_roughness_1024.webp?v=20260714-adaptive1"
     } : {
       surface: "/assets/textures/earth_surface_1024.webp?v=20260714-adaptive1",
       lights: "/assets/textures/earth_lights_points_2048.webp?v=20260714-adaptive1",
       lightMask: "/assets/textures/earth_lights_1024.webp?v=20260714-adaptive1",
       normal: "/assets/textures/earth_normal_1024.webp?v=20260714-adaptive1",
       specular: "/assets/textures/earth_specular_1024.webp?v=20260714-adaptive1",
-      roughness: "/assets/textures/earth_roughness_1024.webp?v=20260714-adaptive1",
-      regions: "/assets/textures/aws_region_embedded_2048.webp?v=20260714-adaptive1"
+      roughness: "/assets/textures/earth_roughness_1024.webp?v=20260714-adaptive1"
     };
-    const [surfaceMap, lightsMap, lightMaskMap, normalMap, specularMap, roughnessMap, regionGlowMap] = await Promise.all([
+    const [surfaceMap, lightsMap, lightMaskMap, normalMap, specularMap, roughnessMap] = await Promise.all([
       loadTexture(textureSet.surface, anisotropy),
       loadTexture(textureSet.lights, anisotropy),
       loadTexture(textureSet.lightMask, anisotropy),
       loadTexture(textureSet.normal, anisotropy),
       loadTexture(textureSet.specular, anisotropy),
-      loadTexture(textureSet.roughness, anisotropy),
-      loadTexture(textureSet.regions, anisotropy)
+      loadTexture(textureSet.roughness, anisotropy)
     ]);
 
     const coreUniforms = {
@@ -855,14 +851,12 @@
       uNormalMap: { value: normalMap || new T.Texture() },
       uSpecularMap: { value: specularMap || new T.Texture() },
       uRoughnessMap: { value: roughnessMap || new T.Texture() },
-      uRegionGlowMap: { value: regionGlowMap || new T.Texture() },
       uHasSurfaceMap: { value: surfaceMap ? 1 : 0 },
       uHasLightsMap: { value: lightsMap ? 1 : 0 },
       uHasLightMaskMap: { value: lightMaskMap ? 1 : 0 },
       uHasNormalMap: { value: normalMap ? 1 : 0 },
       uHasSpecularMap: { value: specularMap ? 1 : 0 },
-      uHasRoughnessMap: { value: roughnessMap ? 1 : 0 },
-      uHasRegionGlowMap: { value: regionGlowMap ? 1 : 0 }
+      uHasRoughnessMap: { value: roughnessMap ? 1 : 0 }
     };
 
     const coreMaterial = new T.ShaderMaterial({
@@ -892,14 +886,12 @@
         uniform sampler2D uNormalMap;
         uniform sampler2D uSpecularMap;
         uniform sampler2D uRoughnessMap;
-        uniform sampler2D uRegionGlowMap;
         uniform float uHasSurfaceMap;
         uniform float uHasLightsMap;
         uniform float uHasLightMaskMap;
         uniform float uHasNormalMap;
         uniform float uHasSpecularMap;
         uniform float uHasRoughnessMap;
-        uniform float uHasRegionGlowMap;
         varying vec2 vUv;
         varying vec3 vNormalV;
         varying vec3 vViewDir;
@@ -967,13 +959,6 @@
           if (uHasLightMaskMap > 0.5) {
             lightMask = srgbToLinear(texture2D(uLightMaskMap, vUv, -0.15).rgb);
           }
-          vec3 regionGlow = vec3(0.0);
-          if (uHasRegionGlowMap > 0.5) {
-            // Embedded AWS-region illumination shares the same UV space as the
-            // night map so the highlighted regions appear inside the Earth.
-            regionGlow = srgbToLinear(texture2D(uRegionGlowMap, vUv, -0.95).rgb);
-          }
-          float regionGlowLuma = max(regionGlow.r, max(regionGlow.g, regionGlow.b));
           float cityLuma = max(city.r, max(city.g, city.b));
           float cityPoint = smoothstep(0.0025, 0.16, cityLuma);
           float cityCore = smoothstep(0.055, 0.62, cityLuma);
@@ -1012,10 +997,7 @@
           vec3 cityColor = cityRadiance * (cityRolledPeak / max(cityPeak, 0.00001));
           float hotspotMix = smoothstep(0.65, 2.0, cityPeak) * 0.72;
           cityColor *= mix(vec3(1.0), vec3(1.0, 0.68, 0.30), hotspotMix);
-          vec3 regionColor = regionGlow * (2.4 + regionGlowLuma * 4.6);
-          regionColor = contrast(regionColor, 1.14, 0.010);
           color += cityColor;
-          color += regionColor;
           color += vec3(0.055, 0.42, 0.98) * scan * 0.010;
           color += vec3(0.006, 0.027, 0.082) * (1.0 - baseLuma) * 0.10;
 

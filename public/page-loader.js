@@ -85,7 +85,7 @@
       await loadScript("/vendor/gsap.min.js?v=20260712-regions1");
       await loadScript("/vendor/ScrollTrigger.min.js?v=20260712-regions1");
       await loadScript("/vendor/three.min.js?v=20260712-regions1");
-      await loadScript("/script.js?v=20260714-citylights2");
+      await loadScript("/script.js?v=20260714-regionartifact1");
     } catch (error) {
       console.error("Interactive portfolio runtime failed:", error);
       showFallback();

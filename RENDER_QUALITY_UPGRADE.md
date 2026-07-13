@@ -16,6 +16,7 @@ This record describes the globe rendering-quality work. Later performance work a
 - 2K and 1K WebP texture tiers selected from device capability and Save-Data preference
 - Deferred texture loading behind the lightweight page bootstrap
 - Smooth city-light highlight roll-off that prevents dense texture samples from clipping into white hotspots
+- Removed the redundant embedded AWS-region starburst texture; projected region pins and deployment effects remain the single region-visualization layer
 
 ## Changed files
 

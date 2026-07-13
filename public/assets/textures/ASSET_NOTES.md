@@ -11,3 +11,5 @@ All production Earth textures are stored in this directory and loaded locally by
 - Constrained, narrow, or Save-Data devices use the 1K WebP surface and lighting maps.
 
 The WebP derivatives preserve the original sources while substantially reducing transfer size. Texture selection happens before loading, so visitors do not download tiers their devices will not use.
+
+The legacy `aws_region_embedded_*` derivatives remain archived in this directory but are no longer requested. Their procedural starburst pixels produced blocky white artifacts on some desktop and mobile GPUs. AWS regions are represented by the projected pins, labels, ripples, and deployment animation instead.

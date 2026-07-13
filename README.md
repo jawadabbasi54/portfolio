@@ -109,7 +109,6 @@ public/
   spider-web.js              Ambient constellation background
 scripts/                     Build-output and Lighthouse budget verification
 tests/                       Desktop and mobile Playwright coverage
-.github/workflows/quality.yml
 astro.config.mjs             Static site URL and sitemap integration
 vercel.json                  Vercel framework, URL, header, and cache settings
 ```
@@ -134,7 +133,7 @@ The résumé is published as `/Jawad_Abbasi_Resume.pdf` and linked with the brow
 
 ## Quality gates
 
-GitHub Actions runs type checks, a production build, generated-output verification, Playwright browser coverage, and a mobile Lighthouse budget on pushes to `main` and pull requests. Lighthouse minimums are maintained in `scripts/verify-lighthouse.mjs`.
+Run `npm run quality` and `npm run test:e2e` before deployment to execute type checks, the production build, generated-output verification, and responsive Playwright coverage. Lighthouse minimums are maintained in `scripts/verify-lighthouse.mjs`. Vercel remains the only automatic service triggered by repository pushes; no GitHub Actions workflows are enabled.
 
 ## Documentation
 
