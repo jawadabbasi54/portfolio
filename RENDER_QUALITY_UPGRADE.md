@@ -15,6 +15,7 @@ This record describes the globe rendering-quality work. Later performance work a
 - Adaptive pixel ratio retained for performance
 - 2K and 1K WebP texture tiers selected from device capability and Save-Data preference
 - Deferred texture loading behind the lightweight page bootstrap
+- Smooth city-light highlight roll-off that prevents dense texture samples from clipping into white hotspots
 
 ## Changed files
 

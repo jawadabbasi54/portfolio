@@ -959,9 +959,9 @@
 
           vec3 city = vec3(0.0);
           if (uHasLightsMap > 0.5) {
-            // The point-light map contains discrete local maxima. A stronger
-            // negative mip bias prevents tiny lights from averaging into blobs.
-            city = srgbToLinear(texture2D(uLightsMap, vUv, -1.15).rgb);
+            // Retain individual lights without undersampling the brightest
+            // texels into unstable white hotspots as the globe rotates.
+            city = srgbToLinear(texture2D(uLightsMap, vUv, -0.55).rgb);
           }
           vec3 lightMask = vec3(0.0);
           if (uHasLightMaskMap > 0.5) {
@@ -1002,10 +1002,16 @@
           color += vec3(0.025, 0.20, 0.52) * fresnel * 0.16;
           color += vec3(0.08, 0.48, 0.94) * grid * (0.016 + fresnel * 0.018);
 
-          // The emissive city map is rendered as compact, high-contrast points.
-          // It deliberately stays out of the bloom layer so the points remain crisp.
-          vec3 cityColor = city * (3.4 + cityPoint * 3.2 + cityCore * 4.6) * cityTwinkle;
-          cityColor = contrast(cityColor, 1.34, 0.012);
+          // Preserve the warm chroma of dense city clusters. The old per-channel
+          // contrast clamp turned the strongest neighbouring texels into pure
+          // white blocks. This luminance roll-off keeps small lights crisp while
+          // compressing only the extreme cores before the renderer's ACES pass.
+          vec3 cityRadiance = city * (3.0 + cityPoint * 2.2 + cityCore * 1.4) * cityTwinkle;
+          float cityPeak = max(cityRadiance.r, max(cityRadiance.g, cityRadiance.b));
+          float cityRolledPeak = cityPeak / (1.0 + cityPeak * 0.68);
+          vec3 cityColor = cityRadiance * (cityRolledPeak / max(cityPeak, 0.00001));
+          float hotspotMix = smoothstep(0.65, 2.0, cityPeak) * 0.72;
+          cityColor *= mix(vec3(1.0), vec3(1.0, 0.68, 0.30), hotspotMix);
           vec3 regionColor = regionGlow * (2.4 + regionGlowLuma * 4.6);
           regionColor = contrast(regionColor, 1.14, 0.010);
           color += cityColor;

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-07-14 — City-light hotspot correction
+
+- Replaced hard per-channel clipping in the globe city-light shader with smooth luminance highlight compression.
+- Reduced undersampling of bright light-map texels so dense city clusters remain stable during rotation.
+- Preserved warm city-light color with an extreme-core chroma safeguard, crisp point separation, and the existing no-bloom Earth treatment.
+- Updated the deferred runtime cache key so deployed browsers receive the corrected shader immediately.
+
 ## 2026-07-14 — Mobile globe CLI visibility
 
 - Restored the compact animated CLI terminal beside the Developer node on mobile viewports.
