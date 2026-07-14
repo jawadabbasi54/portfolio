@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-07-14 — Canonical sitemap alignment
+
+- Configured Astro to use the production site's no-trailing-slash URL policy when generating sitemap entries.
+- Added build assertions that keep every case-study sitemap URL identical to its canonical URL and prevent redirecting variants from returning.
+
 ## 2026-07-14 — Geographic city-light boundaries
 
 - Added a dedicated 1:50m Natural Earth land mask so emissive night lights cannot float over oceans beyond coastlines.

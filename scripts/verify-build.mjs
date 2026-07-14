@@ -32,8 +32,10 @@ for (const required of [
 
 for (const route of expectedRoutes.filter((route) => route.startsWith("case-studies/"))) {
   const html = readFileSync(join(dist, route), "utf8");
+  const canonicalUrl = `https://jawadabbasi.com/${route.replace(/\/index\.html$/, "")}`;
   assert(html.includes('"@type":"TechArticle"'), `${route} is missing TechArticle JSON-LD`);
   assert(html.includes('property="og:type" content="article"'), `${route} is missing article Open Graph metadata`);
+  assert(html.includes(`rel="canonical" href="${canonicalUrl}"`), `${route} has an unexpected canonical URL`);
   assert(html.includes('href="/Jawad_Abbasi_Resume.pdf"'), `${route} is missing the résumé CTA`);
 }
 
@@ -43,8 +45,9 @@ assert(notFound.includes('content="noindex, nofollow"'), "404 page must remain n
 const sitemap = readFileSync(join(dist, "sitemap-0.xml"), "utf8");
 assert(!sitemap.includes("/404"), "404 page must not appear in the sitemap");
 for (const route of expectedRoutes.filter((route) => route.startsWith("case-studies/"))) {
-  const url = `https://jawadabbasi.com/${route.replace(/index\.html$/, "")}`;
-  assert(sitemap.includes(url), `Sitemap is missing: ${url}`);
+  const canonicalUrl = `https://jawadabbasi.com/${route.replace(/\/index\.html$/, "")}`;
+  assert(sitemap.includes(`<loc>${canonicalUrl}</loc>`), `Sitemap is missing canonical URL: ${canonicalUrl}`);
+  assert(!sitemap.includes(`<loc>${canonicalUrl}/</loc>`), `Sitemap contains redirecting URL: ${canonicalUrl}/`);
 }
 
 const robots = readFileSync(join(dist, "robots.txt"), "utf8");
