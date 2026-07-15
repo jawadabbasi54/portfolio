@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-07-15 — External SEO audit remediation
+
+- Prevented Cloudflare email obfuscation from replacing valid contact links with crawler-visible `/cdn-cgi/l/email-protection` URLs.
+- Added native dimensions to every raster and SVG image element to reserve layout space before assets load.
+- Shortened the observability case-study title while retaining its primary search terms.
+- Added `X-Frame-Options: DENY` as an enforced clickjacking safeguard alongside the existing report-only CSP policy.
+
 ## 2026-07-14 — Canonical sitemap alignment
 
 - Configured Astro to use the production site's no-trailing-slash URL policy when generating sitemap entries.

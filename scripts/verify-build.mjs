@@ -29,13 +29,20 @@ for (const required of [
   '"@type":"ProfilePage"',
   'rel="canonical" href="https://jawadabbasi.com"',
 ]) assert(home.includes(required), `Homepage is missing: ${required}`);
+const homeImages = home.match(/<img\b[^>]*>/g) ?? [];
+assert(homeImages.length > 0, "Homepage has no image elements to verify");
+assert(homeImages.every((image) => /\bwidth="\d+"/.test(image) && /\bheight="\d+"/.test(image)), "Every homepage image must reserve intrinsic layout space");
+assert((home.match(/<!--email_off-->/g) ?? []).length === 2, "Homepage contact links must opt out of Cloudflare email rewriting");
 
 for (const route of expectedRoutes.filter((route) => route.startsWith("case-studies/"))) {
   const html = readFileSync(join(dist, route), "utf8");
   const canonicalUrl = `https://jawadabbasi.com/${route.replace(/\/index\.html$/, "")}`;
+  const pageTitle = html.match(/<title>([^<]+)<\/title>/)?.[1] ?? "";
   assert(html.includes('"@type":"TechArticle"'), `${route} is missing TechArticle JSON-LD`);
   assert(html.includes('property="og:type" content="article"'), `${route} is missing article Open Graph metadata`);
   assert(html.includes(`rel="canonical" href="${canonicalUrl}"`), `${route} has an unexpected canonical URL`);
+  assert(pageTitle.length > 0 && pageTitle.length <= 60, `${route} has an invalid or oversized page title`);
+  assert(html.includes("<!--email_off-->"), `${route} contact link must opt out of Cloudflare email rewriting`);
   assert(html.includes('href="/Jawad_Abbasi_Resume.pdf"'), `${route} is missing the résumé CTA`);
 }
 
@@ -53,4 +60,4 @@ for (const route of expectedRoutes.filter((route) => route.startsWith("case-stud
 const robots = readFileSync(join(dist, "robots.txt"), "utf8");
 assert(robots.includes("https://jawadabbasi.com/sitemap-index.xml"), "robots.txt is missing the production sitemap");
 
-console.log(`Verified ${expectedRoutes.length} routes, metadata, résumé, globe assets, sitemap, robots policy, and 404 indexing.`);
+console.log(`Verified ${expectedRoutes.length} routes, metadata, contact links, image dimensions, résumé, globe assets, sitemap, robots policy, and 404 indexing.`);
